@@ -1,0 +1,31 @@
+tier,mcc,description,volume_mn,value_cr
+High,5411,Groceries and supermarkets,3942.44,84237.9
+High,5814,Fast food restaurants,1510.07,18131.91
+High,5812,Eating places and restaurants,1279.75,21406.48
+High,4814,Telecom services,811.59,23296.52
+High,5541,Fuel / service stations,744.84,42367.62
+High,5462,Bakeries,505.03,6717.5
+High,5993,Cigar shops and stands,476.41,3093.48
+High,5912,Drug stores and pharmacies,329.68,13773.79
+High,5451,Dairies,294.38,6359.83
+High,5412,Digital gold,246.29,2585.35
+Medium,7322,Debt collection agencies,222.03,76244.53
+Medium,5921,Liquor shops,216.55,8884.3
+Medium,5262,Online marketplaces,164.39,8691.99
+Medium,9399,Government services,148.85,10860.28
+Medium,4900,Utilities (electric gas water),147.16,24114.53
+Medium,5441,Candy and confectionery,136.36,2747.65
+Medium,5422,Meat provisioners,127.72,4254.33
+Medium,5331,Variety stores,107.4,4298.89
+Medium,5815,Digital goods (media books music),91.64,2034.9
+Medium,6211,Securities brokers and dealers,91.61,74116.12
+Other,5813,Bars and drinking places,90.49,3605.12
+Other,7230,Beauty and barber shops,88.49,2455.61
+Other,5651,Family clothing shops,88.2,7665.77
+Other,7622,Electronics repair shops,86.06,2322.99
+Other,5732,Electronics shops,82.31,10061.94
+Other,5311,Department stores,79,4666.22
+Other,5691,Clothing shops,76.88,9567.42
+Other,4121,Taxis,75.72,1084.1
+Other,4112,Passenger railways,73.76,5296.06
+Other,,Others,2894.01,402044.01

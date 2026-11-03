@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UPI, in six charts — a dataviz exercise</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --de-emphasis: #c3c2b7;
+    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a; --series-4: #eda100;
+    --series-5: #e87ba4; --series-6: #008300; --series-7: #6250d6; --series-8: #e34948;
+    --seq-200: #9ec5f4; --seq-450: #2a78d6; --seq-650: #104281;
+    --good-text: #006300;
+    --bad-text: #b02a2a;
+    --lesson-bg: #f1efe8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface-1: #1a1a19;
+      --text-primary: #f0efec; --text-secondary: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+      --de-emphasis: #4a4a47;
+      --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+      --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
+      --seq-200: #184f95; --seq-450: #3987e5; --seq-650: #86b6ef;
+      --good-text: #0ca30c; --bad-text: #e66767; --lesson-bg: #222220;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19;
+    --text-primary: #f0efec; --text-secondary: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --de-emphasis: #4a4a47;
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70; --series-4: #c98500;
+    --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
+    --seq-200: #184f95; --seq-450: #3987e5; --seq-650: #86b6ef;
+    --good-text: #0ca30c; --bad-text: #e66767; --lesson-bg: #222220;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--page); color: var(--text-primary);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 24px 20px 96px; }
+  header.top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 8px 0 40px; }
+  header.top .kicker { color: var(--muted); font-size: 13px; letter-spacing: 0.02em; text-transform: uppercase; }
+  h1 { font-size: 34px; line-height: 1.15; margin: 4px 0 10px; letter-spacing: -0.01em; }
+  .lede { color: var(--text-secondary); font-size: 17px; max-width: 640px; margin: 0; }
+  .btn { font: inherit; font-size: 13px; color: var(--text-secondary); background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+  .btn:hover { color: var(--text-primary); }
+  .btn[aria-pressed="true"] { color: var(--text-primary); border-color: var(--text-primary); }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .seg .btn { border: 0; border-radius: 0; }
+  .seg .btn + .btn { border-left: 1px solid var(--border); }
+  .seg .btn[aria-pressed="true"] { background: var(--lesson-bg); color: var(--text-primary); }
+
+  section.chapter { margin: 56px 0 0; }
+  .num { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+  h2 { font-size: 24px; line-height: 1.2; margin: 2px 0 8px; letter-spacing: -0.01em; }
+  .intro { color: var(--text-secondary); max-width: 640px; margin: 0 0 18px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 18px 18px 14px; }
+  .card .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+  .card .title { font-weight: 600; font-size: 15px; }
+  .card .sub { color: var(--muted); font-size: 13px; }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .chart { position: relative; width: 100%; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin: 8px 0 0; font-size: 13px; color: var(--text-secondary); }
+  .legend .k { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .legend .ln { width: 16px; height: 2px; border-radius: 1px; display: inline-block; }
+  .note { color: var(--muted); font-size: 12.5px; margin: 10px 0 0; }
+  .tablewrap { display: none; margin-top: 12px; max-height: 360px; overflow: auto; border-top: 1px solid var(--border); }
+  .tablewrap[data-open="true"] { display: block; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 500; position: sticky; top: 0; background: var(--surface-1); }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .lesson { margin: 16px 0 0; padding: 16px 18px; background: var(--lesson-bg); border-radius: 12px; }
+  .lesson h3 { margin: 0 0 6px; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+  .lesson p { margin: 0 0 8px; max-width: 680px; }
+  .lesson p:last-child { margin-bottom: 0; }
+  .lesson b { font-weight: 600; }
+
+  /* KPI tiles */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 720px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px 12px; }
+  .tile .label { color: var(--text-secondary); font-size: 13px; }
+  .tile .value { font-size: 30px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.15; margin: 4px 0 2px; }
+  .tile .delta { font-size: 13px; color: var(--text-secondary); }
+  .tile .delta .up { color: var(--good-text); } .tile .delta .down { color: var(--bad-text); }
+  .tile svg { display: block; width: 100%; height: 28px; margin-top: 8px; overflow: visible; }
+
+  /* SVG chrome */
+  .grid line { stroke: var(--grid); stroke-width: 1; shape-rendering: crispEdges; }
+  .axis path { stroke: var(--axis); } .axis line { stroke: var(--axis); }
+  .axis text { fill: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+  .axis .domain { stroke: var(--axis); }
+  .axis-y .domain { display: none; }
+  .ann text { fill: var(--text-secondary); font-size: 12px; }
+  .ann line { stroke: var(--axis); stroke-width: 1; }
+  .dl text { fill: var(--text-secondary); font-size: 12px; }
+  .crosshair line { stroke: var(--axis); stroke-width: 1; pointer-events: none; }
+  .hit { fill: transparent; pointer-events: all; }
+
+  #tip { position: fixed; z-index: 10; pointer-events: none; display: none; background: var(--surface-1);
+    color: var(--text-primary); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px;
+    font-size: 12.5px; box-shadow: 0 6px 24px rgba(0,0,0,0.12); min-width: 140px; }
+  #tip .t { color: var(--muted); margin-bottom: 4px; }
+  #tip .r { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  #tip .r .k { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+  #tip .r .k i { display: inline-block; width: 12px; height: 2px; border-radius: 1px; }
+  #tip .r .v { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  footer { margin-top: 64px; color: var(--muted); font-size: 13px; max-width: 680px; }
+  footer a { color: inherit; }
+  a { color: inherit; }
+  code { font-size: 0.9em; background: var(--lesson-bg); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div>
+      <div class="kicker">NPCI product statistics · a dataviz exercise</div>
+      <h1>UPI, in six charts</h1>
+      <p class="lede">Same public tables, six decisions. Each chart ships the right form, and a toggle that shows the common mistake so you can feel the difference instead of reading about it.</p>
+    </div>
+    <button class="btn" id="theme">Dark</button>
+  </header>
+
+  <section class="chapter" id="kpi-section" style="margin-top:0">
+    <div class="num">0</div>
+    <h2>Before any chart: is it even a chart?</h2>
+    <p class="intro">October 2026, the latest month NPCI has published. Four numbers, each against the same month a year ago.</p>
+    <div class="kpis" id="kpis"></div>
+    <aside class="lesson">
+      <h3>Lesson</h3>
+      <p><b>A single current value is a stat tile, not a one-bar bar chart.</b> The number is the chart. The sparkline is context, not a second chart: twelve points in the de-emphasis gray, the current period in the accent.</p>
+      <p>Note the one number nobody publishes directly: average ticket size. It is value divided by volume. Chapter 2 is about that number.</p>
+    </aside>
+  </section>
+
+  <section class="chapter" id="c1">
+    <div class="num">1</div>
+    <h2>Ten years of volume: linear hides the first four</h2>
+    <p class="intro">Monthly UPI transactions, April 2016 to October 2026. One series, one hue, no legend.</p>
+    <div class="card">
+      <div class="head">
+        <div><div class="title">Monthly transactions</div><div class="sub">millions per month</div></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Scale">
+            <button class="btn" data-scale="linear" aria-pressed="true">Linear</button>
+            <button class="btn" data-scale="log" aria-pressed="false">Log</button>
+          </div>
+          <button class="btn table-toggle" aria-pressed="false">Table</button>
+        </div>
+      </div>
+      <div class="chart" id="chart1"></div>
+      <div class="tablewrap"></div>
+    </div>
+    <aside class="lesson">
+      <h3>Lesson</h3>
+      <p><b>Linear answers "how big is it now". Log answers "how fast was it growing".</b> On linear the first four years are a flat line glued to the baseline, and demonetisation in November 2016 is invisible. Switch to log and the same data shows the three phases: the 2017 launch spike, a steady doubling-ish every year, then the slope flattening from 2023 as the base gets large.</p>
+      <p>Rule of thumb: if the max is more than about 100× the min and the question is about rate, use log. Label the ticks in plain units so nobody has to read exponents.</p>
+    </aside>
+  </section>
+
+  <section class="chapter" id="c2">
+    <div class="num">2</div>
+    <h2>The number that is not in the table</h2>
+    <p class="intro">Average transaction size, in rupees. Value divided by volume, every month since April 2017.</p>
+    <div class="card">
+      <div class="head">
+        <div><div class="title">Average ticket size</div><div class="sub">₹ per transaction</div></div>
+        <div class="controls"><button class="btn table-toggle" aria-pressed="false">Table</button></div>
+      </div>
+      <div class="chart" id="chart2"></div>
+      <div class="tablewrap"></div>
+    </div>
+    <aside class="lesson">
+      <h3>Lesson</h3>
+      <p><b>Derive before you draw.</b> NPCI publishes volume and value. Neither is the story. Their ratio is: the average UPI payment has shrunk by more than half as the network moved from occasional bank-transfer-sized payments to chai-sized ones. Chapter 3 shows why.</p>
+      <p>Also notice the y-axis starts at zero. A ratio line that starts at zero is honest about how much fell; a truncated axis would make a 60% decline look like a cliff to nothing.</p>
+    </aside>
+  </section>
+
+  <section class="chapter" id="c3">
+    <div class="num">3</div>
+    <h2>Person-to-person vs person-to-merchant: count or share?</h2>
+    <p class="intro">The same split, four ways. NPCI breaks out P2P (sending money to a person) and P2M (paying a merchant) from January 2022.</p>
+    <div class="card">
+      <div class="head">
+        <div><div class="title" id="c3title">Transactions by type</div><div class="sub" id="c3sub">millions per month</div></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Measure">
+            <button class="btn" data-measure="vol" aria-pressed="true">Volume</button>
+            <button class="btn" data-measure="val" aria-pressed="false">Value</button>
+          </div>
+          <div class="seg" role="group" aria-label="Mode">
+            <button class="btn" data-mode="abs" aria-pressed="true">Count</button>
+            <button class="btn" data-mode="share" aria-pressed="false">Share</button>
+          </div>
+          <button class="btn table-toggle" aria-pressed="false">Table</button>
+        </div>
+      </div>
+      <div class="chart" id="chart3"></div>
+      <div class="legend" id="legend3"></div>
+      <div class="tablewrap"></div>
+    </div>
+    <aside class="lesson">
+      <h3>Lesson</h3>
+      <p><b>Stacked count shows growth. Stacked share shows the mix. You usually need both, in that order.</b> On count, both segments grow and the eye reads "everything is up". On share, the orange band crosses the midline: merchant payments went from under half of transactions to nearly two-thirds. Flip to Value and the picture inverts, because a merchant payment is a fraction of the size of a transfer to a friend.</p>
+      <p>Two series, so colour alone is fine, but the legend is still there. A 2px gap in the surface colour separates the segments; no outlines.</p>
+    </aside>
+  </section>
+
+  <section class="chapter" id="c4">
+    <div class="num">4</div>
+    <h2>App share: emphasis beats a rainbow</h2>
+    <p class="intro">Share of monthly UPI transactions by app, January 2022 to September 2026. Eight apps, log scale, so a 1.7% line can share a plot with a 46% line.</p>
+    <div class="card">
+      <div class="head">
+        <div><div class="title">Share of transactions by app</div><div class="sub">% of monthly volume, log scale</div></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Colour">
+            <button class="btn" data-color="emphasis" aria-pressed="true">Emphasis</button>
+            <button class="btn" data-color="rainbow" aria-pressed="false">Show the mistake</button>
+          </div>
+          <button class="btn table-toggle" aria-pressed="false">Table</button>
+        </div>
+      </div>
+      <div class="chart" id="chart4"></div>
+      <div class="legend" id="legend4"></div>
+      <p class="note">Apps shown: the eight that appear most in NPCI's monthly top-8. A gap means the app fell outside the top 8 that month. Apps with no published share before 2022 are not shown.</p>
+      <div class="tablewrap"></div>
+    </div>
+    <aside class="lesson">
+      <h3>Lesson</h3>
+      <p><b>Decide what the story is, then colour only that.</b> The duopoly is not news: PhonePe and Google Pay have held about 80% the whole time. The story is the challengers: Paytm losing a third of its share after RBI's curbs on Paytm Payments Bank in early 2024, and Navi and super.money appearing from nothing in mid-2024 and climbing. Three accent hues on those, the rest in gray with a direct label. Click "Show the mistake" and watch eight equal hues turn the same chart into a legend-matching puzzle.</p>
+      <p>Colour follows the entity. Toggling never repaints a survivor: PhonePe is the same gray in both modes, Navi is the same blue.</p>
+    </aside>
+  </section>
+
+  <section class="chapter" id="c5">
+    <div class="num">5</div>
+    <h2>Where the transactions are: ranked bars, not a map</h2>
+    <p class="intro">September 2026 volume by state. One hue, largest first, and the awkward part of the data left visible.</p>
+    <div class="card">
+      <div class="head">
+        <div><div class="title">Transactions by state, Sep 2026</div><div class="sub">millions, top 15 of 37 states and union territories</div></div>
+        <div class="controls"><button class="btn table-toggle" aria-pressed="false">Table</button></div>
+      </div>
+      <div class="chart" id="chart5"></div>
+      <p class="note">Gray rows are not states: the unclassified remainder, one district placed in the ranking for scale, and the folded tail.</p>
+      <div class="tablewrap"></div>
+    </div>
+    <aside class="lesson">
+      <h3>Lesson</h3>
+      <p><b>A choropleth would colour Rajasthan and Madhya Pradesh by area, not by payments.</b> Ranked bars compare the values exactly, on one baseline, and let you read that one city district (Bengaluru Urban) alone out-transacts every state except the top five.</p>
+      <p><b>Do not hide the hole in the data.</b> 44% of September's transactions are "Unclassified" in NPCI's state table. Dropping that row would make the state shares look twice as confident as they are. It stays at the top, in gray, with its number.</p>
+    </aside>
+  </section>
+
+  <section class="chapter" id="c6">
+    <div class="num">6</div>
+    <h2>What people buy: two measures, one axis each</h2>
+    <p class="intro">Merchant categories in September 2026. How many payments versus how large each payment is.</p>
+    <div class="card">
+      <div class="head">
+        <div><div class="title">Merchant categories: count vs ticket size</div><div class="sub">29 categories NPCI publishes · both axes log</div></div>
+        <div class="controls"><button class="btn table-toggle" aria-pressed="false">Table</button></div>
+      </div>
+      <div class="chart" id="chart6"></div>
+      <div class="tablewrap"></div>
+    </div>
+    <aside class="lesson">
+      <h3>Lesson</h3>
+      <p><b>Two measures of different scale is the moment people reach for a dual-axis chart. Do not.</b> Two y-scales on one plot invent a correlation by how they happen to line up. Give each measure its own axis in a scatter and the shape is the data: groceries are the most frequent purchase and among the smallest; securities brokers and debt collectors are rare and huge; cigarette shops are the cheapest thing on the network.</p>
+      <p>Label a handful of points, not all 29. Each dot has a 24px hit area so hover works without aiming, and the table carries every value.</p>
+    </aside>
+  </section>
+
+  <footer>
+    <p>Source: NPCI <a href="https://www.npci.org.in/product/upi/product-statistics">UPI product statistics</a> and <a href="https://www.npci.org.in/product/ecosystem-statistics/upi">ecosystem statistics</a>, fetched 3 November 2026. Product statistics run to October 2026; ecosystem tables (apps, states, merchant categories) lag by a month and run to September 2026. Value is in crore rupees as published; ₹1 lakh crore = ₹1 trillion.</p>
+    <p>Method: the <code>dataviz</code> skill's procedure. Form first, colour by job, palette validated for colour-vision deficiency in light and dark, thin marks, legend for two or more series, hover layer, table view for every chart.</p>
+  </footer>
+</main>
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>window.DATA = /*__DATA__*/;</script>
+<script type="module">
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+/* ---------- theme ---------- */
+const root = document.documentElement;
+const themeBtn = document.getElementById('theme');
+function isDark() {
+  const t = root.dataset.theme;
+  if (t) return t === 'dark';
+  return matchMedia('(prefers-color-scheme: dark)').matches;
+}
+function syncThemeBtn() { themeBtn.textContent = isDark() ? 'Light' : 'Dark'; }
+themeBtn.addEventListener('click', () => { root.dataset.theme = isDark() ? 'light' : 'dark'; syncThemeBtn(); });
+syncThemeBtn();
+
+/* ---------- data ---------- */
+const D = window.DATA;
+const pMonthly = d3.timeParse('%B-%Y');
+const pMon = d3.timeParse('%b %Y');
+const monthly = D.monthly.map(r => ({ date: pMonthly(r.month), banks: r.banks_live, vol: r.volume_mn, val: r.value_cr,
+  ticket: r.volume_mn > 0 ? r.value_cr * 10 / r.volume_mn : null })).sort((a, b) => a.date - b.date);
+const p2p = D.p2p.map(r => ({ date: pMon(`${r.month} ${r.year}`), p2pVol: r.p2p_vol_mn, p2mVol: r.p2m_vol_mn, p2pVal: r.p2p_val_cr, p2mVal: r.p2m_val_cr })).sort((a, b) => a.date - b.date);
+const apps = D.apps.map(r => ({ date: pMon(`${r.month} ${r.year}`), app: r.app, vol: r.volume_mn, share: r.volume_mn / r.month_total_vol_mn * 100 }));
+const states = D.states;
+const mcc = D.mcc.filter(r => r.description !== 'Others').map(r => ({ ...r, ticket: r.value_cr * 10 / r.volume_mn }));
+
+/* ---------- formatters ---------- */
+const fmtMonth = d3.timeFormat('%b %Y');
+const fmtIN = n => Math.round(n).toLocaleString('en-IN');
+const fmtVol = mn => mn >= 1000 ? `${(mn / 1000).toFixed(mn >= 10000 ? 1 : 2)}B` : mn >= 1 ? `${fmtIN(mn)}M` : `${Math.round(mn * 1000)}K`;
+const fmtVolTick = mn => mn >= 1000 ? `${mn / 1000}B` : mn >= 1 ? `${mn}M` : `${mn * 1000}K`;
+const fmtCr = cr => cr >= 100000 ? `₹${(cr / 100000).toFixed(2)} L cr` : `₹${fmtIN(cr)} cr`;
+const fmtCrTick = cr => cr >= 100000 ? `₹${cr / 100000}L cr` : `₹${fmtIN(cr)} cr`;
+const fmtRs = n => `₹${fmtIN(n)}`;
+const fmtPct = (n, d = 1) => `${n.toFixed(d)}%`;
+
+/* ---------- tooltip ---------- */
+const tip = document.getElementById('tip');
+function showTip(x, y, title, rows) {
+  tip.replaceChildren();
+  const t = document.createElement('div'); t.className = 't'; t.textContent = title; tip.appendChild(t);
+  for (const r of rows) {
+    const row = document.createElement('div'); row.className = 'r';
+    const k = document.createElement('span'); k.className = 'k';
+    if (r.color) { const i = document.createElement('i'); i.style.background = r.color; k.appendChild(i); }
+    k.appendChild(document.createTextNode(r.label));
+    const v = document.createElement('span'); v.className = 'v'; v.textContent = r.value;
+    row.append(k, v); tip.appendChild(row);
+  }
+  tip.style.display = 'block';
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let left = x + 14, top = y + 14;
+  if (left + w > innerWidth - 8) left = x - w - 14;
+  if (top + h > innerHeight - 8) top = y - h - 14;
+  tip.style.left = `${left}px`; tip.style.top = `${top}px`;
+}
+function hideTip() { tip.style.display = 'none'; }
+
+/* ---------- helpers ---------- */
+function frame(container, { height = 360, margin = { top: 20, right: 24, bottom: 36, left: 52 } } = {}) {
+  const el = typeof container === 'string' ? document.getElementById(container) : container;
+  el.replaceChildren();
+  const width = el.clientWidth || 800;
+  const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${width} ${height}`).attr('width', width).attr('height', height);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+  return { el, svg, g, w: width - margin.left - margin.right, h: height - margin.top - margin.bottom, width, height, margin };
+}
+function gridY(g, y, w, ticks) {
+  g.append('g').attr('class', 'grid').selectAll('line').data(ticks).join('line')
+    .attr('x1', 0).attr('x2', w).attr('y1', d => y(d)).attr('y2', d => y(d));
+}
+function axisX(g, x, h, fmt) {
+  g.append('g').attr('class', 'axis axis-x').attr('transform', `translate(0,${h})`)
+    .call(d3.axisBottom(x).ticks(Math.max(3, Math.floor(g.node().getBBox().width / 110)) || 6).tickSize(4).tickFormat(fmt ?? d3.timeFormat('%Y')));
+}
+function axisY(g, y, ticks, fmt) {
+  g.append('g').attr('class', 'axis axis-y').call(d3.axisLeft(y).tickValues(ticks).tickSize(0).tickPadding(8).tickFormat(fmt));
+}
+function wireTable(card, columns, rows) {
+  const wrap = card.querySelector('.tablewrap');
+  const btn = card.querySelector('.table-toggle');
+  const build = () => {
+    wrap.replaceChildren();
+    const table = document.createElement('table');
+    const thead = table.createTHead(); const tr = thead.insertRow();
+    for (const c of columns) { const th = document.createElement('th'); th.textContent = c.label; if (c.num) th.className = 'n'; tr.appendChild(th); }
+    const tb = table.createTBody();
+    for (const r of rows()) { const row = tb.insertRow(); for (const c of columns) { const td = row.insertCell(); td.textContent = c.get(r); if (c.num) td.className = 'n'; } }
+    wrap.appendChild(table);
+  };
+  btn.onclick = () => { const open = wrap.dataset.open !== 'true'; wrap.dataset.open = open; btn.setAttribute('aria-pressed', open); if (open) build(); };
+  return build;
+}
+function segToggle(card, attr, onChange) {
+  const btns = card.querySelectorAll(`[data-${attr}]`);
+  btns.forEach(b => b.addEventListener('click', () => {
+    btns.forEach(o => o.setAttribute('aria-pressed', o === b));
+    onChange(b.dataset[attr]);
+  }));
+}
+function crosshair(fr, x, data, onMove) {
+  const { g, w, h } = fr;
+  const ch = g.append('g').attr('class', 'crosshair').style('display', 'none');
+  const line = ch.append('line').attr('y1', 0).attr('y2', h);
+  const bis = d3.bisector(d => d.date).center;
+  g.append('rect').attr('class', 'hit').attr('width', w).attr('height', h)
+    .on('pointermove', (ev) => {
+      const [mx] = d3.pointer(ev);
+      const i = bis(data, x.invert(mx));
+      const d = data[i]; if (!d) return;
+      ch.style('display', null); line.attr('x1', x(d.date)).attr('x2', x(d.date));
+      onMove(d, ev, ch);
+    })
+    .on('pointerleave', () => { ch.style('display', 'none'); hideTip(); });
+  return ch;
+}
+const S = i => `var(--series-${i})`;
+
+/* ---------- 0. KPI tiles ---------- */
+function renderKpis() {
+  const el = document.getElementById('kpis'); el.replaceChildren();
+  const last = monthly[monthly.length - 1];
+  const ago = monthly[monthly.length - 13];
+  const spark = monthly.slice(-12);
+  const tiles = [
+    { label: `Transactions, ${fmtMonth(last.date)}`, value: fmtVol(last.vol), now: last.vol, then: ago.vol, key: 'vol', upGood: true },
+    { label: 'Value moved', value: fmtCr(last.val), now: last.val, then: ago.val, key: 'val', upGood: true },
+    { label: 'Average ticket', value: fmtRs(last.ticket), now: last.ticket, then: ago.ticket, key: 'ticket', upGood: null },
+    { label: 'Banks live on UPI', value: fmtIN(last.banks), now: last.banks, then: ago.banks, key: 'banks', upGood: true },
+  ];
+  for (const t of tiles) {
+    const d = document.createElement('div'); d.className = 'tile';
+    const l = document.createElement('div'); l.className = 'label'; l.textContent = t.label;
+    const v = document.createElement('div'); v.className = 'value'; v.textContent = t.value;
+    const dl = document.createElement('div'); dl.className = 'delta';
+    const pct = (t.now / t.then - 1) * 100;
+    const s = document.createElement('span');
+    s.textContent = `${pct >= 0 ? '+' : '−'}${Math.abs(pct).toFixed(1)}%`;
+    if (t.upGood !== null) s.className = (pct >= 0) === t.upGood ? 'up' : 'down';
+    dl.append(s, document.createTextNode(` vs ${fmtMonth(ago.date)}`));
+    d.append(l, v, dl); el.appendChild(d);
+    const W = d.clientWidth - 32 || 180, H = 28;
+    const svg = d3.select(d).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
+    const x = d3.scaleLinear().domain([0, 11]).range([2, W - 2]);
+    const y = d3.scaleLinear().domain(d3.extent(spark, r => r[t.key])).nice().range([H - 4, 4]);
+    svg.append('path').datum(spark).attr('fill', 'none').attr('stroke', 'var(--de-emphasis)').attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round')
+      .attr('d', d3.line().x((r, i) => x(i)).y(r => y(r[t.key])));
+    svg.append('circle').attr('cx', x(11)).attr('cy', y(last[t.key])).attr('r', 4).style('fill', S(1)).attr('stroke', 'var(--surface-1)').attr('stroke-width', 2);
+  }
+}
+
+/* ---------- 1. Volume, linear vs log ---------- */
+const c1 = { scale: 'linear' };
+function renderChart1() {
+  const data = monthly.filter(d => d.vol > 0);
+  const fr = frame('chart1', { height: 380 });
+  const { g, w, h } = fr;
+  const x = d3.scaleTime().domain(d3.extent(monthly, d => d.date)).range([0, w]);
+  const log = c1.scale === 'log';
+  const y = log ? d3.scaleLog().domain([0.05, 40000]).range([h, 0]) : d3.scaleLinear().domain([0, 27000]).range([h, 0]);
+  const ticks = log ? [0.1, 1, 10, 100, 1000, 10000] : [0, 5000, 10000, 15000, 20000, 25000];
+  gridY(g, y, w, ticks);
+  axisY(g, y, ticks, fmtVolTick);
+  axisX(g, x, h);
+  g.append('path').datum(data).attr('fill', 'none').style('stroke', S(1)).attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round')
+    .attr('d', d3.line().x(d => x(d.date)).y(d => y(d.vol)).curve(d3.curveMonotoneX));
+  const last = data[data.length - 1];
+  g.append('circle').attr('cx', x(last.date)).attr('cy', y(last.vol)).attr('r', 4).style('fill', S(1)).attr('stroke', 'var(--surface-1)').attr('stroke-width', 2);
+  const dl = g.append('g').attr('class', 'dl');
+  dl.append('text').attr('x', x(last.date) - 6).attr('y', y(last.vol) - 10).attr('text-anchor', 'end').text(`${fmtVol(last.vol)} · ${fmtMonth(last.date)}`);
+  // annotations
+  const ann = g.append('g').attr('class', 'ann');
+  const marks = [
+    { date: new Date(2016, 10, 1), label: 'Demonetisation', dy: log ? -8 : -8 },
+    { date: new Date(2020, 3, 1), label: 'Lockdown dip', dy: -8 },
+  ];
+  for (const m of marks) {
+    const d = data.find(r => r.date.getTime() === m.date.getTime()); if (!d) continue;
+    const yy = y(d.vol);
+    ann.append('line').attr('x1', x(d.date)).attr('x2', x(d.date)).attr('y1', yy - 6).attr('y2', yy - 34);
+    ann.append('text').attr('x', x(d.date) + 4).attr('y', yy - 38).text(m.label);
+  }
+  crosshair(fr, x, data, (d, ev, ch) => {
+    ch.selectAll('circle').data([d]).join('circle').attr('cx', x(d.date)).attr('cy', y(d.vol)).attr('r', 4).style('fill', S(1)).attr('stroke', 'var(--surface-1)').attr('stroke-width', 2);
+    showTip(ev.clientX, ev.clientY, fmtMonth(d.date), [
+      { label: 'Transactions', value: fmtVol(d.vol), color: 'var(--series-1)' },
+      { label: 'Value', value: fmtCr(d.val) },
+      { label: 'Banks live', value: fmtIN(d.banks) },
+    ]);
+  });
+}
+segToggle(document.getElementById('c1'), 'scale', v => { c1.scale = v; renderChart1(); });
+wireTable(document.getElementById('c1'), [
+  { label: 'Month', get: r => fmtMonth(r.date) }, { label: 'Transactions (M)', num: true, get: r => fmtIN(r.vol) },
+  { label: 'Value (₹ cr)', num: true, get: r => fmtIN(r.val) }, { label: 'Banks live', num: true, get: r => r.banks },
+], () => [...monthly].reverse());
+
+/* ---------- 2. Ticket size ---------- */
+function renderChart2() {
+  const data = monthly.filter(d => d.date >= new Date(2017, 3, 1));
+  const fr = frame('chart2', { height: 320 });
+  const { g, w, h } = fr;
+  const x = d3.scaleTime().domain(d3.extent(data, d => d.date)).range([0, w]);
+  const y = d3.scaleLinear().domain([0, 3500]).range([h, 0]);
+  const ticks = [0, 1000, 2000, 3000];
+  gridY(g, y, w, ticks); axisY(g, y, ticks, v => fmtRs(v)); axisX(g, x, h);
+  g.append('path').datum(data).attr('fill', 'none').style('stroke', S(1)).attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round')
+    .attr('d', d3.line().x(d => x(d.date)).y(d => y(d.ticket)).curve(d3.curveMonotoneX));
+  const first = data[0], last = data[data.length - 1];
+  const dl = g.append('g').attr('class', 'dl');
+  for (const [d, anchor, dx] of [[first, 'start', 6], [last, 'end', -6]]) {
+    g.append('circle').attr('cx', x(d.date)).attr('cy', y(d.ticket)).attr('r', 4).style('fill', S(1)).attr('stroke', 'var(--surface-1)').attr('stroke-width', 2);
+    dl.append('text').attr('x', x(d.date) + dx).attr('y', y(d.ticket) - 10).attr('text-anchor', anchor).text(`${fmtRs(d.ticket)} · ${fmtMonth(d.date)}`);
+  }
+  crosshair(fr, x, data, (d, ev, ch) => {
+    ch.selectAll('circle').data([d]).join('circle').attr('cx', x(d.date)).attr('cy', y(d.ticket)).attr('r', 4).style('fill', S(1)).attr('stroke', 'var(--surface-1)').attr('stroke-width', 2);
+    showTip(ev.clientX, ev.clientY, fmtMonth(d.date), [
+      { label: 'Average ticket', value: fmtRs(d.ticket), color: 'var(--series-1)' },
+      { label: 'Value ÷ volume', value: `${fmtCr(d.val)} ÷ ${fmtVol(d.vol)}` },
+    ]);
+  });
+}
+wireTable(document.getElementById('c2'), [
+  { label: 'Month', get: r => fmtMonth(r.date) }, { label: 'Average ticket (₹)', num: true, get: r => fmtIN(r.ticket) },
+], () => [...monthly].filter(d => d.ticket).reverse());
+
+/* ---------- 3. P2P vs P2M ---------- */
+const c3 = { measure: 'vol', mode: 'abs' };
+function renderChart3() {
+  const fr = frame('chart3', { height: 340, margin: { top: 16, right: 16, bottom: 36, left: 60 } });
+  const { g, w, h } = fr;
+  const isVol = c3.measure === 'vol', share = c3.mode === 'share';
+  const kA = isVol ? 'p2pVol' : 'p2pVal', kB = isVol ? 'p2mVol' : 'p2mVal';
+  document.getElementById('c3title').textContent = isVol ? 'Transactions by type' : 'Value by type';
+  document.getElementById('c3sub').textContent = share ? 'share of month, %' : (isVol ? 'millions per month' : '₹ crore per month');
+  const rows = p2p.map(d => { const a = d[kA], b = d[kB], t = a + b; return { date: d.date, a: share ? a / t * 100 : a, b: share ? b / t * 100 : b, rawA: a, rawB: b, t }; });
+  const x = d3.scaleBand().domain(rows.map(d => +d.date)).range([0, w]).paddingInner(0.25);
+  const ymax = share ? 100 : d3.max(rows, d => d.a + d.b) * 1.05;
+  const y = d3.scaleLinear().domain([0, ymax]).range([h, 0]).nice();
+  const ticks = share ? [0, 25, 50, 75, 100] : y.ticks(5);
+  const fmtTick = share ? v => `${v}%` : (isVol ? fmtVolTick : fmtCrTick);
+  gridY(g, y, w, ticks); axisY(g, y, ticks, fmtTick);
+  const xT = d3.scaleTime().domain([rows[0].date, rows[rows.length - 1].date]).range([x(+rows[0].date) + x.bandwidth() / 2, x(+rows[rows.length - 1].date) + x.bandwidth() / 2]);
+  axisX(g, xT, h);
+  const bw = Math.min(24, x.bandwidth());
+  const col = g.append('g').selectAll('g').data(rows).join('g').attr('transform', d => `translate(${x(+d.date) + (x.bandwidth() - bw) / 2},0)`);
+  col.append('rect').attr('width', bw).attr('y', d => y(d.a)).attr('height', d => h - y(d.a)).style('fill', S(1));
+  col.append('rect').attr('width', bw).attr('y', d => y(d.a + d.b)).attr('height', d => Math.max(0, y(d.a) - y(d.a + d.b) - 2)).attr('rx', 3).style('fill', S(2));
+  if (share) g.append('line').attr('x1', 0).attr('x2', w).attr('y1', y(50)).attr('y2', y(50)).attr('stroke', 'var(--axis)').attr('stroke-dasharray', null);
+  const fmtV = isVol ? fmtVol : fmtCr;
+  col.append('rect').attr('class', 'hit').attr('x', -x.bandwidth() * 0.125).attr('width', x.bandwidth()).attr('height', h)
+    .on('pointermove', (ev, d) => {
+      col.style('opacity', r => r === d ? 1 : 0.6);
+      showTip(ev.clientX, ev.clientY, fmtMonth(d.date), [
+        { label: 'P2M (merchant)', value: `${fmtV(d.rawB)} · ${fmtPct(d.rawB / d.t * 100)}`, color: 'var(--series-2)' },
+        { label: 'P2P (person)', value: `${fmtV(d.rawA)} · ${fmtPct(d.rawA / d.t * 100)}`, color: 'var(--series-1)' },
+        { label: 'Total', value: fmtV(d.t) },
+      ]);
+    }).on('pointerleave', () => { col.style('opacity', 1); hideTip(); });
+  const lg = document.getElementById('legend3'); lg.replaceChildren();
+  for (const [c, t] of [[2, 'P2M · person to merchant'], [1, 'P2P · person to person']]) {
+    const k = document.createElement('span'); k.className = 'k';
+    const sw = document.createElement('span'); sw.className = 'sw'; sw.style.background = S(c);
+    k.append(sw, document.createTextNode(t)); lg.appendChild(k);
+  }
+}
+segToggle(document.getElementById('c3'), 'measure', v => { c3.measure = v; renderChart3(); });
+segToggle(document.getElementById('c3'), 'mode', v => { c3.mode = v; renderChart3(); });
+wireTable(document.getElementById('c3'), [
+  { label: 'Month', get: r => fmtMonth(r.date) },
+  { label: 'P2P txns (M)', num: true, get: r => fmtIN(r.p2pVol) }, { label: 'P2M txns (M)', num: true, get: r => fmtIN(r.p2mVol) },
+  { label: 'P2M share of txns', num: true, get: r => fmtPct(r.p2mVol / (r.p2pVol + r.p2mVol) * 100) },
+  { label: 'P2P value (₹ cr)', num: true, get: r => fmtIN(r.p2pVal) }, { label: 'P2M value (₹ cr)', num: true, get: r => fmtIN(r.p2mVal) },
+  { label: 'P2M share of value', num: true, get: r => fmtPct(r.p2mVal / (r.p2pVal + r.p2mVal) * 100) },
+], () => [...p2p].reverse());
+
+/* ---------- 4. App share ---------- */
+const APPS = ['PhonePe', 'Google Pay', 'Paytm', 'Navi', 'super.money', 'BHIM', 'Cred', 'Amazon Pay'];
+const EMPH = { Navi: 1, 'super.money': 2, Paytm: 3 };
+const c4 = { color: 'emphasis' };
+function renderChart4() {
+  const fr = frame('chart4', { height: 420, margin: { top: 16, right: 110, bottom: 36, left: 44 } });
+  const { g, w, h } = fr;
+  const dates = [...new Set(apps.map(d => +d.date))].sort((a, b) => a - b).map(t => new Date(t));
+  const x = d3.scaleTime().domain(d3.extent(dates)).range([0, w]);
+  const y = d3.scaleLog().domain([0.3, 70]).range([h, 0]);
+  const ticks = [0.5, 1, 2, 5, 10, 20, 50];
+  gridY(g, y, w, ticks); axisY(g, y, ticks, v => `${v}%`); axisX(g, x, h);
+  const byApp = APPS.map((app, i) => {
+    const m = new Map(apps.filter(d => d.app === app).map(d => [+d.date, d.share]));
+    return { app, i, points: dates.map(dt => ({ date: dt, share: m.get(+dt) ?? null })) };
+  });
+  const colorOf = a => c4.color === 'rainbow' ? S(a.i + 1) : (EMPH[a.app] ? S(EMPH[a.app]) : 'var(--de-emphasis)');
+  const ann = g.append('g').attr('class', 'ann');
+  const rbi = new Date(2024, 1, 1);
+  ann.append('line').attr('x1', x(rbi)).attr('x2', x(rbi)).attr('y1', 0).attr('y2', h);
+  ann.append('text').attr('x', x(rbi) + 5).attr('y', 12).text('RBI curbs on Paytm Payments Bank');
+  const line = d3.line().defined(d => d.share != null).x(d => x(d.date)).y(d => y(d.share)).curve(d3.curveMonotoneX);
+  const sorted = [...byApp].sort((a, b) => (EMPH[a.app] ? 1 : 0) - (EMPH[b.app] ? 1 : 0));
+  g.append('g').selectAll('path').data(sorted).join('path').attr('fill', 'none').attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round')
+    .style('stroke', colorOf).attr('d', a => line(a.points));
+  // end labels: resolve collisions by nudging apart, then connect with a leader when moved
+  const ends = byApp.map(a => { const p = [...a.points].reverse().find(q => q.share != null); return p ? { a, p, y0: y(p.share), y1: y(p.share) } : null; }).filter(Boolean).sort((u, v) => u.y0 - v.y0);
+  const minGap = 15;
+  for (let i = 1; i < ends.length; i++) if (ends[i].y1 - ends[i - 1].y1 < minGap) ends[i].y1 = ends[i - 1].y1 + minGap;
+  const over = ends[ends.length - 1].y1 - h; if (over > 0) { for (let i = ends.length - 1; i >= 0; i--) { ends[i].y1 -= over; if (i > 0 && ends[i].y1 - ends[i - 1].y1 >= minGap) break; } }
+  const dl = g.append('g').attr('class', 'dl');
+  for (const e of ends) {
+    g.append('circle').attr('cx', x(e.p.date)).attr('cy', e.y0).attr('r', 4).style('fill', colorOf(e.a)).attr('stroke', 'var(--surface-1)').attr('stroke-width', 2);
+    if (Math.abs(e.y1 - e.y0) > 1 || x(e.p.date) < w - 1) dl.append('path').attr('fill', 'none').attr('stroke', 'var(--axis)').attr('stroke-width', 1)
+      .attr('d', `M${x(e.p.date) + 5},${e.y0} H${w + 2} L${w + 6},${e.y1}`);
+    dl.append('text').attr('x', w + 8).attr('y', e.y1 + 4).text(`${e.a.app} ${fmtPct(e.p.share)}`);
+  }
+  const rowsAt = dates.map(dt => ({ date: dt, vals: byApp.map(a => ({ app: a.app, color: colorOf(a), share: a.points.find(p => +p.date === +dt).share })) }));
+  crosshair(fr, x, rowsAt, (d, ev, ch) => {
+    ch.selectAll('circle').data(d.vals.filter(v => v.share != null)).join('circle').attr('cx', x(d.date)).attr('cy', v => y(v.share)).attr('r', 4).style('fill', v => v.color).attr('stroke', 'var(--surface-1)').attr('stroke-width', 2);
+    showTip(ev.clientX, ev.clientY, fmtMonth(d.date), d.vals.filter(v => v.share != null).map(v => ({ label: v.app, value: fmtPct(v.share, 2), color: v.color })));
+  });
+  const lg = document.getElementById('legend4'); lg.replaceChildren();
+  for (const a of byApp) {
+    const k = document.createElement('span'); k.className = 'k';
+    const ln = document.createElement('span'); ln.className = 'ln'; ln.style.background = colorOf(a);
+    k.append(ln, document.createTextNode(a.app)); lg.appendChild(k);
+  }
+}
+segToggle(document.getElementById('c4'), 'color', v => { c4.color = v; renderChart4(); });
+wireTable(document.getElementById('c4'), [
+  { label: 'Month', get: r => fmtMonth(r.date) }, { label: 'App', get: r => r.app }, { label: 'Rank', num: true, get: r => r.rank },
+  { label: 'Transactions (M)', num: true, get: r => fmtIN(r.volume_mn) }, { label: 'Share', num: true, get: r => fmtPct(r.volume_mn / r.month_total_vol_mn * 100, 2) },
+], () => [...D.apps].reverse().map(r => ({ ...r, date: pMon(`${r.month} ${r.year}`) })));
+
+/* ---------- 5. States ---------- */
+function renderChart5() {
+  const uncl = states.find(s => s.state === 'Unclassified');
+  const classified = states.filter(s => s.state !== 'Unclassified');
+  const total = d3.sum(states, s => s.volume_mn);
+  const top = classified.slice(0, 15);
+  const rest = classified.slice(15);
+  const blr = D.districts.find(d => d.district === 'BENGALURU (URBAN)');
+  const rows = [
+    { name: 'Unclassified in NPCI table', v: uncl.volume_mn, kind: 'gap' },
+    ...top.map(s => ({ name: titleCase(s.state), v: s.volume_mn, kind: 'state' })),
+    ...(blr ? [{ name: 'Bengaluru Urban, one district', v: blr.volume_mn, kind: 'district' }] : []),
+    { name: `Other ${rest.length} states and UTs`, v: d3.sum(rest, s => s.volume_mn), kind: 'other' },
+  ].sort((a, b) => (a.kind === 'gap' ? -1 : b.kind === 'gap' ? 1 : a.kind === 'other' ? 1 : b.kind === 'other' ? -1 : b.v - a.v));
+  const rowH = 26;
+  const fr = frame('chart5', { height: rows.length * rowH + 30, margin: { top: 4, right: 110, bottom: 26, left: 190 } });
+  const { g, w, h } = fr;
+  const x = d3.scaleLinear().domain([0, d3.max(rows, r => r.v)]).range([0, w]);
+  const y = d3.scaleBand().domain(rows.map(r => r.name)).range([0, h]).paddingInner(0.3);
+  const bw = Math.min(18, y.bandwidth());
+  g.append('g').attr('class', 'axis axis-y').call(d3.axisLeft(y).tickSize(0).tickPadding(10)).select('.domain').remove();
+  g.append('g').attr('class', 'axis axis-x').attr('transform', `translate(0,${h})`).call(d3.axisBottom(x).ticks(5).tickSize(4).tickFormat(fmtVolTick));
+  const bars = g.append('g').selectAll('g').data(rows).join('g').attr('transform', r => `translate(0,${y(r.name) + (y.bandwidth() - bw) / 2})`);
+  bars.append('rect').attr('height', bw).attr('width', r => x(r.v)).attr('rx', 3)
+    .style('fill', r => r.kind === 'state' ? S(1) : 'var(--de-emphasis)');
+  bars.append('rect').attr('width', 0).attr('height', bw).attr('x', 0).attr('fill', 'var(--surface-1)'); // square the baseline end
+  bars.append('rect').attr('x', 0).attr('width', 4).attr('height', bw).style('fill', r => r.kind === 'state' ? S(1) : 'var(--de-emphasis)');
+  bars.append('text').attr('class', 'dl').attr('x', r => x(r.v) + 6).attr('y', bw / 2 + 4).style('fill', 'var(--text-secondary)').style('font-size', '12px')
+    .text(r => `${fmtVol(r.v)} · ${fmtPct(r.v / total * 100)}`);
+  bars.append('rect').attr('class', 'hit').attr('x', -180).attr('width', w + 290).attr('y', -4).attr('height', bw + 8)
+    .on('pointermove', (ev, r) => {
+      bars.style('opacity', o => o === r ? 1 : 0.6);
+      const s = r.kind === 'state' ? classified.find(c => titleCase(c.state) === r.name) : null;
+      showTip(ev.clientX, ev.clientY, r.name, [
+        { label: 'Transactions', value: fmtVol(r.v), color: r.kind === 'state' ? 'var(--series-1)' : 'var(--de-emphasis)' },
+        { label: 'Share of all', value: fmtPct(r.v / total * 100) },
+        ...(s ? [{ label: 'Share of classified', value: fmtPct(r.v / (total - uncl.volume_mn) * 100) }, { label: 'Districts', value: String(s.districts) }] : []),
+      ]);
+    }).on('pointerleave', () => { bars.style('opacity', 1); hideTip(); });
+}
+function titleCase(s) { return s.toLowerCase().replace(/\b([a-z])/g, m => m.toUpperCase()).replace(/\bAnd\b/g, 'and').replace(/\bOf\b/g, 'of'); }
+wireTable(document.getElementById('c5'), [
+  { label: 'State / UT', get: r => r.state === 'Unclassified' ? 'Unclassified' : titleCase(r.state) }, { label: 'Districts', num: true, get: r => r.districts },
+  { label: 'Transactions (M)', num: true, get: r => fmtIN(r.volume_mn) }, { label: 'Value (₹ cr)', num: true, get: r => fmtIN(r.value_cr) },
+], () => states);
+
+/* ---------- 6. MCC scatter ---------- */
+function renderChart6() {
+  const fr = frame('chart6', { height: 440, margin: { top: 16, right: 24, bottom: 44, left: 60 } });
+  const { g, w, h } = fr;
+  const x = d3.scaleLog().domain([50, 6000]).range([0, w]);
+  const y = d3.scaleLog().domain([40, 12000]).range([h, 0]);
+  const xt = [100, 200, 500, 1000, 2000, 5000], yt = [50, 100, 200, 500, 1000, 2000, 5000, 10000];
+  gridY(g, y, w, yt);
+  g.append('g').attr('class', 'grid').selectAll('line').data(xt).join('line').attr('y1', 0).attr('y2', h).attr('x1', d => x(d)).attr('x2', d => x(d));
+  axisY(g, y, yt, v => fmtRs(v));
+  g.append('g').attr('class', 'axis axis-x').attr('transform', `translate(0,${h})`).call(d3.axisBottom(x).tickValues(xt).tickSize(4).tickFormat(fmtVolTick));
+  g.append('text').attr('class', 'dl').attr('x', w).attr('y', h + 36).attr('text-anchor', 'end').style('fill', 'var(--muted)').style('font-size', '12px').text('transactions in the month →');
+  g.append('text').attr('class', 'dl').attr('x', 0).attr('y', -4).style('fill', 'var(--muted)').style('font-size', '12px').text('↑ average payment');
+  const labelled = new Set(['Groceries and supermarkets', 'Fast food restaurants', 'Fuel / service stations', 'Telecom services', 'Cigar shops and stands', 'Debt collection agencies', 'Securities brokers and dealers', 'Digital gold', 'Taxis', 'Utilities (electric gas water)', 'Drug stores and pharmacies']);
+  const pts = g.append('g').selectAll('g').data(mcc).join('g').attr('transform', d => `translate(${x(d.volume_mn)},${y(d.ticket)})`);
+  pts.append('circle').attr('r', 5).style('fill', S(1)).attr('stroke', 'var(--surface-1)').attr('stroke-width', 2);
+  pts.filter(d => labelled.has(d.description)).append('text').attr('class', 'dl')
+    .attr('x', d => x(d.volume_mn) > w * 0.75 ? -8 : 8).attr('text-anchor', d => x(d.volume_mn) > w * 0.75 ? 'end' : 'start')
+    .attr('y', d => d.description === 'Fast food restaurants' ? 14 : 4)
+    .style('fill', 'var(--text-secondary)').style('font-size', '12px').text(d => d.description.replace(' / service stations', ''));
+  pts.append('circle').attr('class', 'hit').attr('r', 13)
+    .on('pointermove', (ev, d) => {
+      pts.select('circle').attr('r', o => o === d ? 7 : 5);
+      showTip(ev.clientX, ev.clientY, `${d.description} (MCC ${d.mcc})`, [
+        { label: 'Average payment', value: fmtRs(d.ticket), color: 'var(--series-1)' },
+        { label: 'Transactions', value: fmtVol(d.volume_mn) },
+        { label: 'Value', value: fmtCr(d.value_cr) },
+      ]);
+    }).on('pointerleave', () => { pts.select('circle').attr('r', 5); hideTip(); });
+}
+wireTable(document.getElementById('c6'), [
+  { label: 'Category', get: r => r.description }, { label: 'MCC', get: r => r.mcc }, { label: 'Tier', get: r => r.tier },
+  { label: 'Transactions (M)', num: true, get: r => fmtIN(r.volume_mn) }, { label: 'Value (₹ cr)', num: true, get: r => fmtIN(r.value_cr) },
+  { label: 'Average payment (₹)', num: true, get: r => fmtIN(r.ticket) },
+], () => [...mcc].sort((a, b) => b.volume_mn - a.volume_mn));
+
+/* ---------- render all, re-render on resize ---------- */
+function renderAll() { renderKpis(); renderChart1(); renderChart2(); renderChart3(); renderChart4(); renderChart5(); renderChart6(); }
+renderAll();
+let t; new ResizeObserver(() => { clearTimeout(t); t = setTimeout(renderAll, 120); }).observe(document.querySelector('main'));
+</script>
+</body>
+</html>

@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UPI became small change — a live report from NPCI's numbers</title>
+<meta name="description" content="Ten years of UPI data, read as a story: the network grew by swallowing the ₹65 cigarette and the ₹214 grocery run.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..800,50;1,9..144,300..800,50&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f3eee4; --paper-2: #ebe5d8; --ink: #15120e; --ink-2: #4a443b; --muted: #8a8276;
+    --rule: #d9d2c3; --grid: #e2dccf; --axis: #c4bcab; --border: rgba(21,18,14,0.12);
+    --accent: #d2501c;
+    --de-emphasis: #c4bcab; --de-emphasis-2: #ddd6c7;
+    --series-1: #2a78d6; --series-2: #d2501c; --series-3: #1baf7a; --series-4: #eda100; --series-5: #e87ba4; --series-6: #008300; --series-7: #6250d6; --series-8: #e34948;
+    --pos: #2a78d6; --neg: #d2501c; --on-series: #fff;
+    --photo-ink: #f6f1e7;
+    --serif: "Fraunces", "Iowan Old Style", Georgia, serif; --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) {
+    color-scheme: dark; --paper: #121110; --paper-2: #1a1917; --ink: #efe9dc; --ink-2: #c2bbad; --muted: #857d70;
+    --rule: #2b2925; --grid: #272521; --axis: #3d3a34; --border: rgba(239,233,220,0.12);
+    --accent: #e8662f; --de-emphasis: #4a463f; --de-emphasis-2: #33302b;
+    --series-1: #3987e5; --series-2: #e8662f; --series-3: #199e70; --series-4: #c98500; --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
+    --pos: #3987e5; --neg: #e8662f; --on-series: #121110;
+  } }
+  :root[data-theme="dark"] {
+    color-scheme: dark; --paper: #121110; --paper-2: #1a1917; --ink: #efe9dc; --ink-2: #c2bbad; --muted: #857d70;
+    --rule: #2b2925; --grid: #272521; --axis: #3d3a34; --border: rgba(239,233,220,0.12);
+    --accent: #e8662f; --de-emphasis: #4a463f; --de-emphasis-2: #33302b;
+    --series-1: #3987e5; --series-2: #e8662f; --series-3: #199e70; --series-4: #c98500; --series-5: #d55181; --series-6: #008300; --series-7: #9085e9; --series-8: #e66767;
+    --pos: #3987e5; --neg: #e8662f; --on-series: #121110;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.55 var(--sans); -webkit-font-smoothing: antialiased; }
+  button { cursor: pointer; font: inherit; }
+  a { color: inherit; }
+  .serif { font-family: var(--serif); }
+  .num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+  /* ---- sticky index ---- */
+  .nav { position: fixed; inset: 0 0 auto 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 24px; color: var(--photo-ink); transition: background .35s, color .35s, box-shadow .35s; }
+  .nav.solid { background: color-mix(in srgb, var(--paper) 86%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); color: var(--ink); box-shadow: 0 1px 0 var(--border); }
+  .nav .mark { display: flex; align-items: center; gap: 10px; font-family: var(--serif); font-weight: 600; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; }
+  .nav .mark img { height: 18px; width: auto; display: block; }
+  .nav ol { list-style: none; display: flex; gap: 4px; margin: 0; padding: 0; }
+  .nav ol a { display: block; width: 34px; height: 30px; line-height: 30px; text-align: center; border-radius: 8px; text-decoration: none; font-size: 12.5px; font-weight: 600; opacity: .6; font-variant-numeric: tabular-nums; }
+  .nav ol a:hover { opacity: 1; }
+  .nav ol a.on { opacity: 1; background: color-mix(in srgb, currentColor 14%, transparent); }
+  .nav .theme { background: none; border: 1px solid color-mix(in srgb, currentColor 35%, transparent); color: inherit; border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 500; }
+  @media (max-width: 720px) { .nav ol { display: none; } }
+
+  /* ---- hero ---- */
+  .hero { position: relative; min-height: 100svh; display: grid; align-items: end; overflow: hidden; color: var(--photo-ink); isolation: isolate; }
+  .hero .bg { position: absolute; inset: -12% 0; z-index: -2; background: url(assets/hero-chai.jpg) center 40% / cover no-repeat; transform: scale(1.08); animation: heroIn 1.8s cubic-bezier(.2,.7,.2,1) forwards; will-change: transform; }
+  .hero .shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10,8,6,.35) 0%, rgba(10,8,6,.08) 35%, rgba(10,8,6,.55) 70%, rgba(10,8,6,.86) 100%), linear-gradient(90deg, rgba(10,8,6,.55) 0%, rgba(10,8,6,0) 60%); }
+  @keyframes heroIn { to { transform: scale(1); } }
+  .hero .inner { width: min(1180px, 100% - 48px); margin: 0 auto; padding: 120px 0 44px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 40px; align-items: end; }
+  .kicker { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; opacity: .85; }
+  .hero h1 { font-family: var(--serif); font-variation-settings: "opsz" 144, "SOFT" 50; font-weight: 700; font-size: clamp(48px, 7.4vw, 104px); line-height: .94; letter-spacing: -0.025em; margin: 14px 0 20px; max-width: 11ch; }
+  .hero .lede { font-size: clamp(17px, 1.6vw, 21px); line-height: 1.45; max-width: 36ch; margin: 0; opacity: .92; }
+  .hero .live { justify-self: end; text-align: right; }
+  .hero .live .big { font-family: var(--serif); font-variation-settings: "opsz" 144, "SOFT" 30; font-weight: 500; font-size: clamp(40px, 5vw, 72px); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .hero .live .lbl { font-size: 13px; opacity: .8; margin: 6px 0 22px; }
+  .hero .live .rate { font-size: 12.5px; opacity: .7; max-width: 34ch; margin-left: auto; }
+  .hero .credit, .bleed .credit { position: absolute; right: 16px; bottom: 10px; font-size: 11px; opacity: .55; }
+  .fx { opacity: 0; transform: translateY(18px); animation: up .9s cubic-bezier(.2,.7,.2,1) forwards; }
+  .fx.d1 { animation-delay: .15s } .fx.d2 { animation-delay: .3s } .fx.d3 { animation-delay: .45s } .fx.d4 { animation-delay: .7s }
+  @keyframes up { to { opacity: 1; transform: none; } }
+  @media (max-width: 860px) { .hero .inner { grid-template-columns: 1fr; padding-top: 96px; } .hero .live { justify-self: start; text-align: left; } .hero .live .rate { margin-left: 0; } }
+
+  /* ---- editorial column ---- */
+  .wrap { width: min(1180px, 100% - 48px); margin: 0 auto; }
+  .measure { max-width: 680px; }
+  section.chapter { padding: 96px 0 24px; scroll-margin-top: 40px; }
+  .chapter .head { display: grid; grid-template-columns: 96px 1fr; gap: 24px; align-items: start; border-top: 1px solid var(--rule); padding-top: 22px; }
+  .chapter .no { font-family: var(--serif); font-variation-settings: "opsz" 144, "SOFT" 50; font-weight: 300; font-style: italic; font-size: 64px; line-height: .8; color: var(--muted); letter-spacing: -0.02em; }
+  h2 { font-family: var(--serif); font-variation-settings: "opsz" 96, "SOFT" 50; font-weight: 600; font-size: clamp(30px, 3.6vw, 46px); line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 14px; max-width: 22ch; }
+  .intro { color: var(--ink-2); font-size: 18px; max-width: 60ch; margin: 0; }
+  .fig { margin: 40px 0 0; }
+  .fig .cap { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+  .fig .cap .t { font-weight: 600; font-size: 15px; }
+  .fig .cap .s { color: var(--muted); font-size: 13px; }
+  .chart { position: relative; width: 100%; }
+  .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin: 12px 0 0; font-size: 13px; color: var(--ink-2); }
+  .legend .k { display: inline-flex; align-items: center; gap: 7px; cursor: default; }
+  .legend .sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .legend .ln { width: 18px; height: 2px; border-radius: 1px; display: inline-block; }
+  .note { color: var(--muted); font-size: 12.5px; margin: 10px 0 0; max-width: 80ch; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; padding: 2px; gap: 2px; }
+  .seg button { border: 0; background: none; color: var(--ink-2); border-radius: 999px; padding: 4px 11px; font-size: 12.5px; font-weight: 500; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .sowhat { margin: 36px 0 0; padding-left: 20px; border-left: 3px solid var(--accent); max-width: 640px; }
+  .sowhat h3 { margin: 0 0 8px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .sowhat p { margin: 0 0 10px; }
+  .sowhat p:last-child { margin-bottom: 0; }
+  .sowhat b { font-weight: 600; }
+  .sowhat .lead { font-family: var(--serif); font-variation-settings: "opsz" 48, "SOFT" 50; font-weight: 500; font-size: 22px; line-height: 1.3; letter-spacing: -0.01em; }
+  @media (max-width: 720px) { .chapter .head { grid-template-columns: 1fr; gap: 6px; } .chapter .no { font-size: 44px; } section.chapter { padding-top: 64px; } }
+
+  /* ---- full-bleed interludes ---- */
+  .bleed { position: relative; margin: 72px 0 0; min-height: clamp(420px, 72vh, 720px); overflow: hidden; color: var(--photo-ink); display: grid; align-items: end; isolation: isolate; }
+  .bleed .bg { position: absolute; inset: -14% 0; z-index: -2; background-size: cover; background-position: center; will-change: transform; }
+  .bleed .shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10,8,6,.1) 0%, rgba(10,8,6,.7) 100%); }
+  .bleed .inner { width: min(1180px, 100% - 48px); margin: 0 auto; padding: 48px 0; display: flex; justify-content: space-between; align-items: end; gap: 32px; flex-wrap: wrap; }
+  .bleed .huge { font-family: var(--serif); font-variation-settings: "opsz" 144, "SOFT" 50; font-weight: 600; font-size: clamp(64px, 11vw, 160px); line-height: .9; letter-spacing: -0.03em; }
+  .bleed .say { max-width: 36ch; font-size: clamp(16px, 1.5vw, 19px); line-height: 1.4; }
+  .bleed .say b { font-weight: 600; }
+
+  /* ---- reveal ---- */
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal, .fx { opacity: 1; transform: none; animation: none; transition: none; } .hero .bg { animation: none; transform: none; } html { scroll-behavior: auto; } }
+
+  /* ---- svg chrome ---- */
+  .grid line { stroke: var(--grid); stroke-width: 1; shape-rendering: crispEdges; }
+  .axis path, .axis line, .axis .domain { stroke: var(--axis); }
+  .axis text { fill: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; font-family: var(--sans); }
+  .axis-y .domain { display: none; }
+  .ann text { fill: var(--ink-2); font-size: 12px; }
+  .ann line, .ann path { stroke: var(--axis); stroke-width: 1; fill: none; }
+  .dl text { fill: var(--ink-2); font-size: 12.5px; }
+  .dl text.strong { fill: var(--ink); font-weight: 600; }
+  .dl line, .dl path { stroke: var(--axis); stroke-width: 1; fill: none; }
+  .crosshair line { stroke: var(--axis); stroke-width: 1; pointer-events: none; }
+  .hit { fill: transparent; pointer-events: all; }
+  .lane text { fill: var(--muted); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
+  .cell text { font-size: 11px; fill: var(--ink); font-variant-numeric: tabular-nums; pointer-events: none; }
+  .inlabel { fill: var(--on-series); font-size: 12.5px; pointer-events: none; font-weight: 500; }
+  .rowlabel { fill: var(--ink); font-size: 13.5px; }
+  .pct { fill: var(--ink-2); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  svg text { font-family: var(--sans); }
+  .lane-g { transition: opacity .35s; }
+
+  #tip { position: fixed; z-index: 30; pointer-events: none; display: none; background: var(--paper); color: var(--ink); border: 1px solid var(--border); border-radius: 10px; padding: 9px 11px; font-size: 12.5px; box-shadow: 0 10px 30px rgba(0,0,0,.18); min-width: 150px; max-width: 290px; }
+  #tip .t { color: var(--muted); margin-bottom: 4px; }
+  #tip .r { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+  #tip .r .k { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
+  #tip .r .k i { display: inline-block; width: 12px; height: 3px; border-radius: 2px; }
+  #tip .r .v { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  footer { margin-top: 110px; border-top: 1px solid var(--rule); padding: 28px 0 60px; color: var(--muted); font-size: 13px; }
+  footer .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  footer p { margin: 0 0 8px; max-width: 60ch; }
+  @media (max-width: 720px) { footer .cols { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<nav class="nav" id="nav" aria-label="Chapters">
+  <a class="mark" href="#top" style="text-decoration:none"><img src="assets/upi.svg" alt="UPI"> <span>Small change</span></a>
+  <ol>
+    <li><a href="#c1">01</a></li><li><a href="#c2">02</a></li><li><a href="#c3">03</a></li><li><a href="#c4">04</a></li><li><a href="#c5">05</a></li><li><a href="#c6">06</a></li><li><a href="#c7">07</a></li>
+  </ol>
+  <button class="theme" id="theme">Dark</button>
+</nav>
+
+<header class="hero" id="top">
+  <div class="bg" id="herobg"></div><div class="shade"></div>
+  <div class="inner">
+    <div>
+      <div class="kicker fx">A live report from NPCI's UPI statistics · 2016 to 2026</div>
+      <h1 class="fx d1">UPI became small change.</h1>
+      <p class="lede fx d2">The network did not grow by moving more money per payment. It grew by swallowing the ₹65 cigarette, the ₹120 vada pav and the ₹214 grocery run. Seven claims, each with the chart that proves it.</p>
+    </div>
+    <div class="live fx d4">
+      <div class="big num" id="h-count">0</div>
+      <div class="lbl">payments since you opened this page</div>
+      <div class="big num" id="h-value">₹0</div>
+      <div class="lbl">moved in that time</div>
+      <div class="rate" id="h-rate"></div>
+    </div>
+  </div>
+  <div class="credit">Varanasi · photo Rudra Gupta, Unsplash</div>
+</header>
+
+<main>
+  <section class="chapter wrap" id="c1">
+    <div class="head reveal"><div class="no">01</div><div><h2>It stopped compounding. It now adds the same four billion a year.</h2><p class="intro">How many extra monthly payments UPI picked up each year, October to October. The bar is the addition; the small number is the growth rate it implies.</p></div></div>
+    <figure class="fig reveal"><div class="cap"><div class="t">Payments added per month, year on year</div><div class="s">billions of monthly transactions gained, October vs the previous October</div></div><div class="chart" id="chart1"></div></figure>
+    <aside class="sowhat reveal"><h3>So what</h3>
+      <p class="lead">A straight line in volume is a falling line in percent.</p>
+      <p>From 2023 the bar stops getting taller. UPI adds four to five billion monthly payments every year no matter how big it already is, so growth rates slide from 56% to 23% without anything actually slowing down.</p>
+      <p>If you only read the growth rate you would call this a maturing product. If you only read the bar you would call it a steady machine. Both are true.</p></aside>
+  </section>
+
+  <section class="chapter wrap" id="c2">
+    <div class="head reveal"><div class="no">02</div><div><h2>Ten years, one crash, and a February problem.</h2><p class="intro">Every month since 2018 as a cell. Colour is the change from the month before. Blue grew, orange shrank.</p></div></div>
+    <figure class="fig reveal"><div class="cap"><div class="t">Month-on-month change in payments</div><div class="s">percent vs the previous month</div></div><div class="chart" id="chart2"></div><div class="legend" id="legend2"></div></figure>
+    <aside class="sowhat reveal"><h3>So what</h3>
+      <p class="lead">The lockdown is the only real crash.</p>
+      <p>April 2020 lost a fifth of all payments in one month. Everything else in orange is calendar arithmetic: February has three fewer days, and November gives back part of the Diwali bump in October.</p>
+      <p>The grid also shows the compounding fade from chapter 1 another way. The early rows are deep blue almost everywhere. By 2025 a typical month is a pale 1 to 3%.</p></aside>
+  </section>
+
+  <section class="chapter wrap" id="c3">
+    <div class="head reveal"><div class="no">03</div><div><h2>The average payment halved. Nobody started paying less.</h2><p class="intro">Average rupees per payment, split by who is being paid: a person, or a merchant. The blended line is what NPCI's headline numbers imply.</p></div></div>
+    <figure class="fig reveal"><div class="cap"><div class="t">Average ticket, person vs merchant</div><div class="s">₹ per payment, January 2022 to October 2026</div></div><div class="chart" id="chart3"></div><div class="legend" id="legend3"></div><div class="chart" id="chart3b" style="margin-top:12px"></div></figure>
+    <aside class="sowhat reveal"><h3>So what</h3>
+      <p class="lead">This is a mix effect.</p>
+      <p>A payment to a person has stayed around ₹2,400 for five years. A payment to a merchant drifted from ₹886 to ₹603. The blended average fell from ₹1,800 to ₹1,238 mostly because the merchant share of payments went from 40% to 63%, the strip under the chart.</p>
+      <p>Merchant payments grew 8.7× in that window. Person-to-person grew 3.4×. The new payments are the small cash purchases that moved onto the phone.</p></aside>
+  </section>
+
+  <figure class="bleed" data-bg="assets/grains.jpg" data-pos="center 55%">
+    <div class="bg"></div><div class="shade"></div>
+    <div class="inner"><div class="huge num">₹214</div><div class="say"><b>The average grocery payment.</b> Groceries and supermarkets alone are a quarter of every merchant payment on UPI, and the single biggest thing the network does.</div></div>
+    <div class="credit">New Delhi · photo Urip Dunker, Unsplash</div>
+  </figure>
+
+  <section class="chapter wrap" id="c4">
+    <div class="head reveal"><div class="no">04</div><div><h2>Merchants are wide and short. Finance is thin and tall.</h2><p class="intro">Every merchant category NPCI reports for September 2026. Width is its share of merchant payments. Height is the average ticket. Area is the money.</p></div></div>
+    <figure class="fig reveal"><div class="cap"><div class="t">The merchant skyline</div><div class="seg" role="group" aria-label="Sort"><button data-sort="ticket" aria-pressed="true">Sort by ticket</button><button data-sort="share" aria-pressed="false">Sort by share</button></div></div><div class="chart" id="chart4"></div><div class="note">Hover any block. The two finance needles break the frame at ₹2,000 and are labelled. "Others" is NPCI's bucket for everything outside its top 29 categories, in gray.</div></figure>
+    <aside class="sowhat reveal"><h3>So what</h3>
+      <p class="lead">Groceries alone are a quarter of merchant payments, at ₹214 each.</p>
+      <p>Add fast food, restaurants, bakeries, dairies and cigarette stands and you have more than half of all merchant taps averaging under ₹250. That is the slab on the left: the everyday purchases that were coins and small notes until recently.</p>
+      <p>On the right, securities brokers take 0.6% of taps but 8.4% of the money, at ₹8,090 a go. Debt collection is 1.5% of taps and 8.6% of the money. The needle and the slab are the same product carrying two different economies.</p></aside>
+  </section>
+
+  <figure class="bleed" data-bg="assets/coins.jpg" data-pos="center">
+    <div class="bg"></div><div class="shade"></div>
+    <div class="inner"><div class="huge num">₹65</div><div class="say"><b>The average payment at a cigarette stand.</b> Half a billion of them a month. This is what "small change" means: the coins never left the economy, they left the pocket.</div></div>
+    <div class="credit">photo rupixen, Unsplash</div>
+  </figure>
+
+  <section class="chapter wrap" id="c5">
+    <div class="head reveal"><div class="no">05</div><div><h2>The rupee ladder: everything in UPI, placed by what one payment is worth.</h2><p class="intro">Merchant categories, apps, banks and states on the same log scale of average ticket. The dashed lines are the two halves of the network from chapter 3.</p></div></div>
+    <figure class="fig reveal"><div class="cap"><div class="t">Average ₹ per payment, September 2026</div><div class="seg" role="group" aria-label="Lanes" id="lanes"><button data-lane="all" aria-pressed="true">All</button><button data-lane="0" aria-pressed="false">Merchants</button><button data-lane="1" aria-pressed="false">Apps</button><button data-lane="2" aria-pressed="false">Banks</button><button data-lane="3" aria-pressed="false">States</button></div></div><div class="chart" id="chart5"></div><div class="note">Cred is placed at its last reported month (May 2026). Banks are the top 12 by volume plus India Post Payments Bank. States exclude the unclassified 44%.</div></figure>
+    <aside class="sowhat reveal"><h3>So what</h3>
+      <p class="lead">Ticket size tells you who something is for.</p>
+      <p>FamApp, a teen app, runs at ₹132. Navi and super.money sit at ₹483, the signature of cashback-driven small spends. Cred clears credit-card bills at ₹3,881. India Post Payments Bank at ₹477 is the rural post office counter; HDFC at ₹1,880 is the urban salary account.</p>
+      <p>States barely spread at all. Assam at ₹996 and Ladakh at ₹1,898 bracket everyone, and most sit within ₹200 of each other. Geography is not where the variation in UPI lives. Purpose is.</p></aside>
+  </section>
+
+  <section class="chapter wrap" id="c6">
+    <div class="head reveal"><div class="no">06</div><div><h2>The duopoly is not cracking from the top. It is being nibbled from the bottom.</h2><p class="intro">Share of payments by app, January 2022 to September 2026. The two incumbents are drawn in gray so the movement shows. Hover a name to isolate it.</p></div></div>
+    <figure class="fig reveal"><div class="cap"><div class="t">App share of UPI payments</div><div class="s">percent of monthly volume</div></div><div class="chart" id="chart6"></div><div class="legend" id="legend6"></div></figure>
+    <aside class="sowhat reveal"><h3>So what</h3>
+      <p class="lead">Paytm's cliff is a regulator, not a competitor.</p>
+      <p>Its share went from 13% to 8% between January and April 2024, when RBI shut down Paytm Payments Bank. Almost all of it went to PhonePe and Google Pay, whose combined share peaked at 87%.</p>
+      <p>Since then the pair has slipped back to 79%, and the gain went to apps that did not exist in this table in 2023. Navi is at 4.8% and super.money at 1.7%, both with tickets under ₹500. The long tail went from 1.4% to 4.7%, and the number of live apps from 59 to 96.</p></aside>
+  </section>
+
+  <figure class="bleed" data-bg="assets/street.jpg" data-pos="center 40%">
+    <div class="bg"></div><div class="shade"></div>
+    <div class="inner"><div class="huge num">712M</div><div class="say"><b>Bengaluru Urban's payments in one month.</b> One district, more than 30 of India's 37 states and territories. The map of UPI is a map of a few dozen cities.</div></div>
+    <div class="credit">Chennai · photo David De Gendt, Unsplash</div>
+  </figure>
+
+  <section class="chapter wrap" id="c7">
+    <div class="head reveal"><div class="no">07</div><div><h2>A state's UPI is mostly its one metro.</h2><p class="intro">The ten biggest states by payments, September 2026. Coloured segments are the districts that make NPCI's national top 30. Gray is the rest of the state.</p></div></div>
+    <figure class="fig reveal"><div class="cap"><div class="t">Top-30 districts inside their states</div><div class="s">millions of payments · the number at the end is the metro share</div></div><div class="chart" id="chart7"></div><div class="note">Hover a segment for the district.</div></figure>
+    <aside class="sowhat reveal"><h3>So what</h3>
+      <p class="lead">Maharashtra is three quarters Mumbai, Pune, Thane and friends.</p>
+      <p>Karnataka is 57% Bengaluru. Telangana is two thirds the Hyderabad cluster. Uttar Pradesh, the most populous state, is the exception: its three top-30 districts add up to a third, and the rest is spread across 72 others.</p>
+      <p>One caveat that should sit on every geography chart of UPI: 44% of all payments carry no state at all in NPCI's data. The ranking is of the classified half.</p></aside>
+  </section>
+
+  <footer class="wrap">
+    <div class="cols">
+      <div><p><b>Source.</b> NPCI product and ecosystem statistics for UPI, fetched November 2026. Headline volume and value run to October 2026. App, merchant and state tables run to September 2026. Average ticket is value divided by volume. Merchant categories use NPCI's MCC grouping; "Others" is their bucket.</p></div>
+      <div><p><b>Photos.</b> Rudra Gupta, Urip Dunker, rupixen and David De Gendt, all on Unsplash. <b>Type.</b> Fraunces and Inter. Built with D3 from a static copy of the data; charts redraw on resize and follow your system theme.</p></div>
+    </div>
+  </footer>
+</main>
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script>window.DATA = /*__DATA__*/;</script>
+<script type="module">
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+/* ---------- theme, nav, reveal, parallax ---------- */
+const root = document.documentElement, themeBtn = document.getElementById('theme');
+const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+const syncTheme = () => themeBtn.textContent = isDark() ? 'Light' : 'Dark';
+themeBtn.addEventListener('click', () => { root.dataset.theme = isDark() ? 'light' : 'dark'; syncTheme(); });
+syncTheme();
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const nav = document.getElementById('nav'), hero = document.getElementById('top'), heroBg = document.getElementById('herobg');
+const bleeds = [...document.querySelectorAll('.bleed')];
+for (const b of bleeds) { const bg = b.querySelector('.bg'); bg.style.backgroundImage = `url(${b.dataset.bg})`; bg.style.backgroundPosition = b.dataset.pos || 'center'; }
+let ticking = false;
+function onScroll() {
+  if (ticking) return; ticking = true;
+  requestAnimationFrame(() => {
+    const y = scrollY; nav.classList.toggle('solid', y > innerHeight * 0.75);
+    if (!reduced) {
+      if (y < innerHeight) heroBg.style.translate = `0 ${y * 0.22}px`;
+      for (const b of bleeds) { const r = b.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) continue; const p = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; b.querySelector('.bg').style.translate = `0 ${p * -60}px`; }
+    }
+    ticking = false;
+  });
+}
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+const links = [...nav.querySelectorAll('ol a')];
+const chapterObs = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) links.forEach(a => a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id)); }, { rootMargin: '-40% 0px -55% 0px' });
+document.querySelectorAll('section.chapter').forEach(s => chapterObs.observe(s));
+const revealObs = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); revealObs.unobserve(e.target); } }, { rootMargin: '0px 0px -10% 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+/* ---------- data ---------- */
+const D = window.DATA;
+const pMonthly = d3.timeParse('%B-%Y'), pMon = d3.timeParse('%b %Y');
+const monthly = D.monthly.map(r => ({ date: pMonthly(r.month), banks: r.banks_live, vol: r.volume_mn, val: r.value_cr, ticket: r.volume_mn > 0 ? r.value_cr * 10 / r.volume_mn : null })).sort((a, b) => a.date - b.date);
+const p2p = D.p2p.map(r => ({ date: pMon(`${r.month} ${r.year}`), tP2P: r.p2p_val_cr * 10 / r.p2p_vol_mn, tP2M: r.p2m_val_cr * 10 / r.p2m_vol_mn, tAll: (r.p2p_val_cr + r.p2m_val_cr) * 10 / (r.p2p_vol_mn + r.p2m_vol_mn), p2mShare: r.p2m_vol_mn / (r.p2p_vol_mn + r.p2m_vol_mn) * 100 })).sort((a, b) => a.date - b.date);
+const apps = D.apps.map(r => ({ date: pMon(`${r.month} ${r.year}`), app: r.app, vol: r.volume_mn, val: r.value_cr, share: r.volume_mn / r.month_total_vol_mn * 100, appsCount: r.apps_count }));
+const states = D.states.map(r => ({ ...r, ticket: r.value_cr * 10 / r.volume_mn }));
+const districts = D.districts.map(r => ({ ...r, ticket: r.value_cr * 10 / r.volume_mn }));
+const banks = D.banks.map(r => ({ ...r, ticket: r.value_cr * 10 / r.volume_mn }));
+const mcc = D.mcc.map(r => ({ ...r, ticket: r.value_cr * 10 / r.volume_mn }));
+
+/* ---------- formatters ---------- */
+const fmtMonth = d3.timeFormat('%b %Y');
+const fmtIN = n => Math.round(n).toLocaleString('en-IN');
+const fmtVol = mn => mn >= 1000 ? `${(mn / 1000).toFixed(mn >= 10000 ? 1 : 2)}B` : `${fmtIN(mn)}M`;
+const fmtCr = cr => cr >= 100000 ? `₹${(cr / 100000).toFixed(2)} lakh cr` : `₹${fmtIN(cr)} cr`;
+const fmtRs = n => `₹${fmtIN(n)}`;
+const fmtPct = (n, d = 1) => `${n.toFixed(d)}%`;
+const fmtSigned = (n, d = 1) => `${n > 0 ? '+' : n < 0 ? '−' : ''}${Math.abs(n).toFixed(d)}%`;
+const titleCase = s => s.toLowerCase().replace(/\b([a-z])/g, c => c.toUpperCase()).replace(/\bAnd\b/g, 'and').replace(/\bOf\b/g, 'of');
+
+/* ---------- tooltip ---------- */
+const tip = document.getElementById('tip');
+function showTip(x, y, title, rows) {
+  tip.replaceChildren();
+  const t = document.createElement('div'); t.className = 't'; t.textContent = title; tip.appendChild(t);
+  for (const r of rows) {
+    const row = document.createElement('div'); row.className = 'r';
+    const k = document.createElement('span'); k.className = 'k';
+    if (r.color) { const i = document.createElement('i'); i.style.background = r.color; k.appendChild(i); }
+    k.appendChild(document.createTextNode(r.label));
+    const v = document.createElement('span'); v.className = 'v'; v.textContent = r.value;
+    row.append(k, v); tip.appendChild(row);
+  }
+  tip.style.display = 'block';
+  const w = tip.offsetWidth, h = tip.offsetHeight; let left = x + 14, top = y + 14;
+  if (left + w > innerWidth - 8) left = x - w - 14; if (top + h > innerHeight - 8) top = y - h - 14;
+  tip.style.left = `${left}px`; tip.style.top = `${top}px`;
+}
+const hideTip = () => tip.style.display = 'none';
+
+/* ---------- helpers ---------- */
+function frame(id, { height = 380, margin = { top: 20, right: 24, bottom: 36, left: 52 } } = {}) {
+  const el = document.getElementById(id); el.replaceChildren();
+  const width = el.clientWidth || 900;
+  const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${width} ${height}`).attr('width', width).attr('height', height);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+  return { el, svg, g, w: width - margin.left - margin.right, h: height - margin.top - margin.bottom, width, height };
+}
+const gridY = (g, y, w, ticks) => g.append('g').attr('class', 'grid').selectAll('line').data(ticks).join('line').attr('x1', 0).attr('x2', w).attr('y1', d => y(d)).attr('y2', d => y(d));
+const axisX = (g, x, h, fmt, n) => g.append('g').attr('class', 'axis axis-x').attr('transform', `translate(0,${h})`).call(d3.axisBottom(x).ticks(n ?? 6).tickSize(4).tickFormat(fmt ?? d3.timeFormat('%Y')));
+const axisY = (g, y, ticks, fmt) => g.append('g').attr('class', 'axis axis-y').call(d3.axisLeft(y).tickValues(ticks).tickSize(0).tickPadding(8).tickFormat(fmt));
+function legend(id, items, onHover) {
+  const box = document.getElementById(id); box.replaceChildren();
+  for (const it of items) {
+    const k = document.createElement('span'); k.className = 'k';
+    const sw = document.createElement('span'); sw.className = it.line ? 'ln' : 'sw'; sw.style.background = it.color;
+    k.append(sw, document.createTextNode(it.label)); box.appendChild(k);
+    if (onHover) { k.style.cursor = 'pointer'; k.onpointerenter = () => onHover(it.key ?? it.label); k.onpointerleave = () => onHover(null); }
+  }
+}
+function crosshair(fr, x, data, onMove) {
+  const { g, w, h } = fr; const ch = g.append('g').attr('class', 'crosshair').style('display', 'none');
+  const line = ch.append('line').attr('y1', 0).attr('y2', h); const bis = d3.bisector(d => d.date).center;
+  g.append('rect').attr('class', 'hit').attr('width', w).attr('height', h)
+    .on('pointermove', ev => { const [mx] = d3.pointer(ev); const d = data[bis(data, x.invert(mx))]; if (!d) return; ch.style('display', null); line.attr('x1', x(d.date)).attr('x2', x(d.date)); onMove(d, ev); })
+    .on('pointerleave', () => { ch.style('display', 'none'); hideTip(); });
+}
+const S = i => `var(--series-${i})`;
+const EASE = d3.easeCubicOut, DUR = 900;
+let anim = !reduced; // animate on first render in view; resize re-renders are instant
+const drawLine = (path, delay = 0) => { if (!anim) return; const L = path.node().getTotalLength(); path.attr('stroke-dasharray', `${L} ${L}`).attr('stroke-dashoffset', L).transition().delay(delay).duration(1400).ease(EASE).attr('stroke-dashoffset', 0).on('end', () => path.attr('stroke-dasharray', null)); };
+function clipGrow(fr, sel, delay = 0) { if (!anim) return; const id = `clip-${fr.el.id}`; fr.svg.append('clipPath').attr('id', id).append('rect').attr('width', 0).attr('height', fr.height).transition().delay(delay).duration(1400).ease(EASE).attr('width', fr.width); sel.attr('clip-path', `url(#${id})`); }
+
+/* ---------- hero counter ---------- */
+(function hero() {
+  const last = monthly[monthly.length - 1];
+  const days = new Date(last.date.getFullYear(), last.date.getMonth() + 1, 0).getDate();
+  const perSec = last.vol * 1e6 / days / 86400, rsPerSec = last.val * 1e7 / days / 86400;
+  document.getElementById('h-rate').textContent = `${fmtIN(perSec)} payments and ₹${(rsPerSec / 1e7).toFixed(2)} crore every second: ${fmtMonth(last.date)}, NPCI's latest month, spread evenly over its ${days} days.`;
+  const count = document.getElementById('h-count'), value = document.getElementById('h-value'), t0 = performance.now();
+  function tick(now) { const s = (now - t0) / 1000; count.textContent = fmtIN(perSec * s); value.textContent = `₹${(rsPerSec * s / 1e7).toFixed(1)} crore`; requestAnimationFrame(tick); }
+  if (reduced) { count.textContent = fmtIN(perSec); value.textContent = `₹${(rsPerSec / 1e7).toFixed(2)} crore`; document.querySelectorAll('.hero .lbl')[0].textContent = 'payments every second'; document.querySelectorAll('.hero .lbl')[1].textContent = 'every second'; }
+  else requestAnimationFrame(tick);
+})();
+
+/* ---------- 1. yearly additions ---------- */
+function renderChart1() {
+  const byKey = new Map(monthly.map(d => [`${d.date.getFullYear()}-${d.date.getMonth()}`, d])); const rows = [];
+  for (let y = 2018; y <= 2026; y++) { const a = byKey.get(`${y - 1}-9`), b = byKey.get(`${y}-9`); if (a && b) rows.push({ year: y, add: (b.vol - a.vol) / 1000, pct: (b.vol / a.vol - 1) * 100, from: a.vol, to: b.vol }); }
+  const fr = frame('chart1', { height: 380, margin: { top: 28, right: 16, bottom: 56, left: 44 } }); const { g, w, h } = fr;
+  const x = d3.scaleBand().domain(rows.map(r => r.year)).range([0, w]).paddingInner(0.32).paddingOuter(0.1);
+  const y = d3.scaleLinear().domain([0, 6]).range([h, 0]); const ticks = [0, 2, 4, 6];
+  gridY(g, y, w, ticks); axisY(g, y, ticks, v => `${v}B`);
+  g.append('g').attr('class', 'axis axis-x').attr('transform', `translate(0,${h})`).call(d3.axisBottom(x).tickSize(0).tickPadding(8));
+  const bars = g.selectAll('rect.bar').data(rows).join('rect').attr('class', 'bar').attr('x', r => x(r.year)).attr('width', x.bandwidth()).attr('rx', 2).style('fill', r => r.year >= 2023 ? S(1) : 'var(--de-emphasis)');
+  if (anim) bars.attr('y', h).attr('height', 0).transition().delay((r, i) => i * 70).duration(DUR).ease(EASE).attr('y', r => y(r.add)).attr('height', r => h - y(r.add));
+  else bars.attr('y', r => y(r.add)).attr('height', r => h - y(r.add));
+  const dl = g.append('g').attr('class', 'dl');
+  const t1 = dl.selectAll('text.add').data(rows).join('text').attr('class', r => r.year >= 2023 ? 'strong' : '').attr('x', r => x(r.year) + x.bandwidth() / 2).attr('y', r => y(r.add) - 9).attr('text-anchor', 'middle').text(r => `+${r.add.toFixed(1)}B`);
+  dl.selectAll('text.pct').data(rows).join('text').attr('x', r => x(r.year) + x.bandwidth() / 2).attr('y', h + 36).attr('text-anchor', 'middle').style('fill', 'var(--muted)').text(r => `${Math.round(r.pct)}%`);
+  dl.append('text').attr('x', -40).attr('y', h + 36).style('fill', 'var(--muted)').text('growth');
+  if (anim) t1.attr('opacity', 0).transition().delay((r, i) => 400 + i * 70).duration(500).attr('opacity', 1);
+  bars.on('pointermove', (ev, r) => showTip(ev.clientX, ev.clientY, `October ${r.year - 1} → October ${r.year}`, [{ label: 'Monthly payments', value: `${fmtVol(r.from)} → ${fmtVol(r.to)}` }, { label: 'Added', value: `+${fmtVol(r.add * 1000)}` }, { label: 'Growth', value: fmtPct(r.pct, 0) }])).on('pointerleave', hideTip);
+}
+
+/* ---------- 2. calendar ---------- */
+function renderChart2() {
+  const years = d3.range(2018, 2027), months = d3.range(12), mon = d3.timeFormat('%b'); const cells = [];
+  for (let i = 1; i < monthly.length; i++) { const d = monthly[i], p = monthly[i - 1]; if (d.date.getFullYear() < 2018 || p.vol <= 0) continue; cells.push({ y: d.date.getFullYear(), m: d.date.getMonth(), v: (d.vol / p.vol - 1) * 100, d }); }
+  const fr = frame('chart2', { height: 36 * years.length + 40, margin: { top: 24, right: 8, bottom: 8, left: 44 } }); const { g, w, h } = fr;
+  const x = d3.scaleBand().domain(months).range([0, w]).paddingInner(0.08), y = d3.scaleBand().domain(years).range([0, h]).paddingInner(0.12);
+  const amp = v => Math.min(1, Math.abs(v) / 12);
+  g.append('g').attr('class', 'axis').selectAll('text').data(months).join('text').attr('x', m => x(m) + x.bandwidth() / 2).attr('y', -8).attr('text-anchor', 'middle').text(m => mon(new Date(2020, m, 1)));
+  g.append('g').attr('class', 'axis').selectAll('text').data(years).join('text').attr('x', -10).attr('y', yv => y(yv) + y.bandwidth() / 2 + 4).attr('text-anchor', 'end').text(yv => yv);
+  const cell = g.selectAll('g.cell').data(cells).join('g').attr('class', 'cell').attr('transform', c => `translate(${x(c.m)},${y(c.y)})`);
+  const rects = cell.append('rect').attr('width', x.bandwidth()).attr('height', y.bandwidth()).attr('rx', 3).style('fill', c => c.v >= 0 ? 'var(--pos)' : 'var(--neg)');
+  const txt = cell.filter(() => x.bandwidth() >= 34).append('text').attr('x', x.bandwidth() / 2).attr('y', y.bandwidth() / 2 + 4).attr('text-anchor', 'middle').text(c => fmtSigned(c.v, 0));
+  if (anim) { rects.style('fill-opacity', 0).transition().delay((c, i) => i * 9).duration(500).style('fill-opacity', c => 0.08 + 0.72 * amp(c.v)); txt.attr('opacity', 0).transition().delay((c, i) => 200 + i * 9).duration(400).attr('opacity', 1); }
+  else rects.style('fill-opacity', c => 0.08 + 0.72 * amp(c.v));
+  cell.on('pointermove', (ev, c) => showTip(ev.clientX, ev.clientY, fmtMonth(c.d.date), [{ label: 'Payments', value: fmtVol(c.d.vol) }, { label: 'vs previous month', value: fmtSigned(c.v) }])).on('pointerleave', hideTip);
+  legend('legend2', [{ color: 'var(--pos)', label: 'grew vs previous month' }, { color: 'var(--neg)', label: 'shrank' }]);
+  const s = document.createElement('span'); s.className = 'k'; s.textContent = 'Deeper colour = bigger change, capped at ±12%'; document.getElementById('legend2').appendChild(s);
+}
+
+/* ---------- 3. ticket mix ---------- */
+function renderChart3() {
+  const fr = frame('chart3', { height: 340, margin: { top: 18, right: 120, bottom: 28, left: 52 } }); const { g, w, h } = fr;
+  const x = d3.scaleTime().domain(d3.extent(p2p, d => d.date)).range([0, w]), y = d3.scaleLinear().domain([0, 3200]).range([h, 0]); const ticks = [0, 1000, 2000, 3000];
+  gridY(g, y, w, ticks); axisY(g, y, ticks, fmtRs); axisX(g, x, h);
+  const series = [{ k: 'tP2P', label: 'To a person', color: 'var(--de-emphasis)', wgt: 2 }, { k: 'tP2M', label: 'To a merchant', color: S(2), wgt: 2 }, { k: 'tAll', label: 'Blended (the headline)', color: S(1), wgt: 2.5 }];
+  series.forEach((s, i) => drawLine(g.append('path').datum(p2p).attr('fill', 'none').style('stroke', s.color).attr('stroke-width', s.wgt).attr('stroke-linejoin', 'round').attr('d', d3.line().x(d => x(d.date)).y(d => y(d[s.k])).curve(d3.curveMonotoneX)), i * 150));
+  const last = p2p[p2p.length - 1], first = p2p[0]; const dl = g.append('g').attr('class', 'dl');
+  for (const s of series) { dl.append('text').attr('x', x(last.date) + 8).attr('y', y(last[s.k]) + 4).attr('class', s.k === 'tAll' ? 'strong' : '').text(fmtRs(last[s.k])); dl.append('text').attr('x', x(first.date)).attr('y', y(first[s.k]) - 8).text(fmtRs(first[s.k])); }
+  if (anim) dl.attr('opacity', 0).transition().delay(1200).duration(500).attr('opacity', 1);
+  crosshair(fr, x, p2p, (d, ev) => showTip(ev.clientX, ev.clientY, fmtMonth(d.date), [{ label: 'To a person', value: fmtRs(d.tP2P), color: 'var(--de-emphasis)' }, { label: 'To a merchant', value: fmtRs(d.tP2M), color: S(2) }, { label: 'Blended', value: fmtRs(d.tAll), color: S(1) }, { label: 'Merchant share of payments', value: fmtPct(d.p2mShare, 0) }]));
+  legend('legend3', series.map(s => ({ color: s.color, label: s.label, line: true })));
+  const fb = frame('chart3b', { height: 70, margin: { top: 16, right: 120, bottom: 4, left: 52 } }); const ys = d3.scaleLinear().domain([0, 100]).range([fb.h, 0]);
+  const area = fb.g.append('path').datum(p2p).attr('fill', S(2)).attr('fill-opacity', 0.22).attr('d', d3.area().x(d => x(d.date)).y0(fb.h).y1(d => ys(d.p2mShare)).curve(d3.curveMonotoneX));
+  clipGrow(fb, area, 300);
+  const dls = fb.g.append('g').attr('class', 'dl');
+  dls.append('text').attr('x', 0).attr('y', -5).text('Merchant share of all payments');
+  dls.append('text').attr('x', x(first.date) + 4).attr('y', ys(first.p2mShare) + 15).text(fmtPct(first.p2mShare, 0));
+  dls.append('text').attr('x', x(last.date) + 8).attr('y', ys(last.p2mShare) + 4).attr('class', 'strong').text(fmtPct(last.p2mShare, 0));
+}
+
+/* ---------- 4. merchant skyline ---------- */
+const c4 = { sort: 'ticket' };
+function renderChart4() {
+  const rows = [...mcc].sort((a, b) => c4.sort === 'ticket' ? a.ticket - b.ticket : b.volume_mn - a.volume_mn);
+  const totV = d3.sum(rows, r => r.volume_mn), totVal = d3.sum(rows, r => r.value_cr);
+  let acc = 0; for (const r of rows) { r.x0 = acc / totV; acc += r.volume_mn; r.x1 = acc / totV; r.vShare = r.volume_mn / totV * 100; r.valShare = r.value_cr / totVal * 100; }
+  const CAP = 2000;
+  const fr = frame('chart4', { height: 440, margin: { top: 84, right: 16, bottom: 32, left: 52 } }); const { g, w, h } = fr;
+  const x = d3.scaleLinear().domain([0, 1]).range([0, w]), y = d3.scaleLinear().domain([0, CAP]).range([h, 0]); const ticks = [0, 500, 1000, 1500, 2000];
+  gridY(g, y, w, ticks); axisY(g, y, ticks, fmtRs);
+  g.append('g').attr('class', 'axis axis-x').attr('transform', `translate(0,${h})`).call(d3.axisBottom(x).tickValues([0, 0.25, 0.5, 0.75, 1]).tickSize(4).tickFormat(d3.format('.0%')));
+  g.append('text').attr('class', 'pct').attr('x', w).attr('y', h + 30).attr('text-anchor', 'end').text('share of merchant payments →');
+  const top = r => Math.min(r.ticket, CAP), ext = r => r.ticket > CAP ? 10 : 0;
+  const blocks = g.selectAll('rect.b').data(rows).join('rect').attr('class', 'b').attr('x', r => x(r.x0) + 1).attr('width', r => Math.max(2, x(r.x1) - x(r.x0) - 2)).attr('rx', 1).style('fill', r => r.description === 'Others' ? 'var(--de-emphasis)' : S(2));
+  if (anim) blocks.attr('y', h).attr('height', 0).transition().delay((r, i) => i * 30).duration(DUR).ease(EASE).attr('y', r => y(top(r)) - ext(r)).attr('height', r => h - y(top(r)) + ext(r));
+  else blocks.attr('y', r => y(top(r)) - ext(r)).attr('height', r => h - y(top(r)) + ext(r));
+  g.selectAll('path.brk').data(rows.filter(r => r.ticket > CAP)).join('path').attr('fill', 'none').attr('stroke', 'var(--paper)').attr('stroke-width', 2).attr('d', r => { const cx = (x(r.x0) + x(r.x1)) / 2, yy = y(CAP) + 12; return `M${cx - 6},${yy + 3} l12,-6 M${cx - 6},${yy + 9} l12,-6`; });
+  blocks.on('pointermove', (ev, r) => showTip(ev.clientX, ev.clientY, r.description, [{ label: 'Average ticket', value: fmtRs(r.ticket) }, { label: 'Share of payments', value: fmtPct(r.vShare) }, { label: 'Share of money', value: fmtPct(r.valShare) }, { label: 'Payments', value: fmtVol(r.volume_mn) }, { label: 'Money', value: fmtCr(r.value_cr) }])).on('pointerleave', hideTip);
+  const want = new Map([['Cigar shops and stands', 'Cigarette stands ₹65'], ['Fast food restaurants', 'Fast food ₹120'], ['Eating places and restaurants', 'Restaurants ₹167'], ['Groceries and supermarkets', 'Groceries ₹214 · 26% of taps'], ['Fuel / service stations', 'Fuel ₹569'], ['Telecom services', 'Telecom ₹287'], ['Others', 'Others ₹1,389 · 45% of money'], ['Utilities (electric gas water)', 'Utilities ₹1,639'], ['Debt collection agencies', 'Debt collection ₹3,434 ↑ · 8.6% of money'], ['Securities brokers and dealers', 'Securities brokers ₹8,090 ↑ · 8.4% of money']]);
+  const dl = g.append('g').attr('class', 'dl'); const placed = []; const estW = t => t.length * 6.6;
+  const collides = (lx0, lx1, ly) => placed.some(p => lx0 < p.x1 + 8 && lx1 > p.x0 - 8 && Math.abs(p.y - ly) < 22);
+  for (const r of rows) {
+    const t = want.get(r.description); if (!t) continue;
+    const cx = (x(r.x0) + x(r.x1)) / 2, wide = x(r.x1) - x(r.x0) > 36, tw = estW(t); let anchor = 'middle', lx = cx;
+    if (cx + tw / 2 > w) { anchor = 'end'; lx = Math.min(w, cx + 4); } else if (cx - tw / 2 < 0) { anchor = 'start'; lx = cx - 4; }
+    const lx0 = anchor === 'middle' ? lx - tw / 2 : anchor === 'end' ? lx - tw : lx, lx1 = lx0 + tw;
+    const start = wide ? y(top(r)) - 8 : -12; let ly = start; while (collides(lx0, lx1, ly)) ly -= 16;
+    placed.push({ x0: lx0, x1: lx1, y: ly });
+    if (!wide || ly !== start) dl.append('path').attr('d', `M${cx},${y(top(r)) - (r.ticket > CAP ? 12 : 2)} V${ly + 3}`);
+    dl.append('text').attr('x', lx).attr('y', ly).attr('text-anchor', anchor).attr('class', /Groceries|Securities/.test(r.description) ? 'strong' : '').text(t);
+  }
+  if (anim) dl.attr('opacity', 0).transition().delay(900).duration(500).attr('opacity', 1);
+}
+document.querySelectorAll('[data-sort]').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('[data-sort]').forEach(o => o.setAttribute('aria-pressed', o === b)); c4.sort = b.dataset.sort; const was = anim; anim = !reduced; renderChart4(); anim = was; }));
+
+/* ---------- 5. rupee ladder ---------- */
+function renderChart5() {
+  const lastAppDate = d3.max(apps, a => a.date);
+  const appRows = apps.filter(a => +a.date === +lastAppDate && a.val > 0).map(a => ({ name: a.app, ticket: a.val * 10 / a.vol, sub: `${fmtPct(a.share)} of payments` }));
+  const cred = [...apps].reverse().find(a => a.app === 'Cred' && a.val > 0); if (cred) appRows.push({ name: 'Cred', ticket: cred.val * 10 / cred.vol, sub: `${fmtMonth(cred.date)}, last reported` });
+  const bankRows = [...banks.slice(0, 12), ...banks.filter(b => /India Post/i.test(b.bank) && b.rank > 12)].map(b => ({ name: b.bank, ticket: b.ticket, sub: `rank ${b.rank} by volume` }));
+  const stateRows = states.filter(s => s.state !== 'Unclassified').map(s => ({ name: titleCase(s.state), ticket: s.ticket, sub: `${fmtVol(s.volume_mn)} payments` }));
+  const mccTot = d3.sum(mcc, m => m.volume_mn);
+  const mccRows = mcc.filter(r => r.description !== 'Others').map(r => ({ name: r.description, ticket: r.ticket, sub: `${fmtPct(r.volume_mn / mccTot * 100)} of merchant payments` }));
+  const lanes = [
+    { name: 'Merchant categories', h: 96, rows: mccRows, color: S(2), labels: { 'Cigar shops and stands': 'Cigarettes', 'Fast food restaurants': 'Fast food', 'Groceries and supermarkets': 'Groceries', 'Fuel / service stations': 'Fuel', 'Utilities (electric gas water)': 'Utilities', 'Debt collection agencies': 'Debt collection', 'Securities brokers and dealers': 'Securities brokers' } },
+    { name: 'Apps', h: 92, rows: appRows, color: S(7), labels: { FamApp: 'FamApp', Navi: 'Navi, super.money', Paytm: 'Paytm', PhonePe: 'PhonePe, Google Pay', Cred: 'Cred' } },
+    { name: 'Banks', h: 92, rows: bankRows, color: S(3), labels: { 'India Post Payments Bank': 'India Post Payments Bank', 'State Bank of India': 'SBI', 'HDFC Bank': 'HDFC', 'ICICI Bank': 'ICICI' } },
+    { name: 'States', h: 128, rows: stateRows, color: S(1), labels: { Assam: 'Assam', Ladakh: 'Ladakh' } },
+  ];
+  const totalH = d3.sum(lanes, l => l.h);
+  const fr = frame('chart5', { height: totalH + 54, margin: { top: 32, right: 24, bottom: 22, left: 12 } }); const { g, w } = fr;
+  const x = d3.scaleLog().domain([55, 10000]).range([0, w]); const xt = [100, 200, 500, 1000, 2000, 5000, 10000];
+  g.append('g').attr('class', 'grid').selectAll('line').data(xt).join('line').attr('x1', d => x(d)).attr('x2', d => x(d)).attr('y1', 0).attr('y2', totalH);
+  g.append('g').attr('class', 'axis axis-x').attr('transform', `translate(0,${totalH})`).call(d3.axisBottom(x).tickValues(xt).tickSize(4).tickFormat(v => `₹${fmtIN(v)}`));
+  const lp = p2p[p2p.length - 1]; const ann = g.append('g').attr('class', 'ann');
+  for (const r of [{ v: lp.tP2M, t: `merchant avg ${fmtRs(lp.tP2M)}` }, { v: lp.tAll, t: `all UPI ${fmtRs(lp.tAll)}` }, { v: lp.tP2P, t: `person avg ${fmtRs(lp.tP2P)}` }]) { ann.append('line').attr('x1', x(r.v)).attr('x2', x(r.v)).attr('y1', -6).attr('y2', totalH).attr('stroke-dasharray', '3 3'); ann.append('text').attr('x', x(r.v)).attr('y', -12).attr('text-anchor', 'middle').text(r.t); }
+  let top = 0;
+  lanes.forEach((lane, li) => {
+    const laneH = lane.h, base = laneH * 0.56, R = lane.rows.length > 20 ? 4 : 5.5, gap = R * 2 + 1;
+    const lg = g.append('g').attr('class', 'lane-g').attr('data-lane', li).attr('transform', `translate(0,${top})`);
+    lg.append('g').attr('class', 'lane').append('text').attr('x', 0).attr('y', 14).text(lane.name);
+    lg.append('line').attr('x1', 0).attr('x2', w).attr('y1', laneH).attr('y2', laneH).style('stroke', 'var(--grid)');
+    const rows = [...lane.rows].sort((a, b) => a.ticket - b.ticket); const occupied = [];
+    for (const r of rows) { const px = x(r.ticket); let lvl = 0; while (occupied.some(o => o.lvl === lvl && Math.abs(o.px - px) < gap)) lvl++; occupied.push({ px, lvl }); r.px = px; r.py = base - (lvl % 2 ? -1 : 1) * Math.ceil(lvl / 2) * gap; }
+    const dots = lg.selectAll('circle').data(rows).join('circle').attr('cx', r => r.px).attr('cy', r => r.py).style('fill', lane.color).attr('stroke', 'var(--paper)').attr('stroke-width', 1.5)
+      .on('pointermove', (ev, r) => showTip(ev.clientX, ev.clientY, r.name, [{ label: 'Average ticket', value: fmtRs(r.ticket), color: lane.color }, { label: '', value: r.sub }])).on('pointerleave', hideTip);
+    if (anim) dots.attr('r', 0).transition().delay((r, i) => li * 150 + i * 18).duration(600).ease(d3.easeBackOut).attr('r', R); else dots.attr('r', R);
+    const dl = lg.append('g').attr('class', 'dl'); let i = 0; const minY = d3.min(rows, r => r.py), maxY = d3.max(rows, r => r.py);
+    for (const r of rows) {
+      const t = lane.labels[r.name]; if (!t) continue; const tw = t.length * 6.6;
+      if (r === rows[0]) { const fits = r.px - R - 5 - tw > -10; dl.append('text').attr('x', fits ? r.px - R - 5 : r.px + R + 5).attr('y', r.py + 4).attr('text-anchor', fits ? 'end' : 'start').text(t); }
+      else if (r === rows[rows.length - 1]) { const fits = r.px + R + 5 + tw < w + 20; dl.append('text').attr('x', fits ? r.px + R + 5 : r.px - R - 5).attr('y', r.py + 4).attr('text-anchor', fits ? 'start' : 'end').text(t); }
+      else { const above = i++ % 2 === 0; dl.append('text').attr('x', r.px).attr('y', above ? minY - 10 : maxY + 17).attr('text-anchor', 'middle').text(t); }
+    }
+    if (anim) dl.attr('opacity', 0).transition().delay(700 + li * 150).duration(500).attr('opacity', 1);
+    top += laneH;
+  });
+  applyLanes();
+}
+const c5 = { lane: 'all' };
+function applyLanes() { document.querySelectorAll('#chart5 .lane-g').forEach(el => el.style.opacity = c5.lane === 'all' || el.dataset.lane === c5.lane ? 1 : 0.14); }
+document.querySelectorAll('[data-lane]').forEach(b => b.addEventListener('click', () => { document.querySelectorAll('[data-lane]').forEach(o => o.setAttribute('aria-pressed', o === b)); c5.lane = b.dataset.lane; applyLanes(); }));
+
+/* ---------- 6. app share ---------- */
+function renderChart6() {
+  const keys = ['PhonePe', 'Google Pay', 'Paytm', 'Navi', 'super.money', 'Others'];
+  const colors = { PhonePe: 'var(--de-emphasis)', 'Google Pay': 'var(--de-emphasis-2)', Paytm: S(2), Navi: S(1), 'super.money': S(7), Others: 'var(--grid)' };
+  const byDate = d3.rollup(apps, v => { const o = {}; let s = 0; for (const k of keys.slice(0, 5)) { const r = v.find(a => a.app === k); o[k] = r ? r.share : 0; s += o[k]; } o.Others = Math.max(0, 100 - s); o.appsCount = v[0].appsCount; return o; }, a => +a.date);
+  const data = [...byDate.entries()].map(([t, o]) => ({ date: new Date(t), ...o })).sort((a, b) => a.date - b.date);
+  const fr = frame('chart6', { height: 400, margin: { top: 30, right: 120, bottom: 28, left: 40 } }); const { g, w, h } = fr;
+  const x = d3.scaleTime().domain(d3.extent(data, d => d.date)).range([0, w]), y = d3.scaleLinear().domain([0, 100]).range([h, 0]);
+  const stack = d3.stack().keys(keys)(data);
+  axisY(g, y, [0, 25, 50, 75, 100], v => `${v}%`); axisX(g, x, h);
+  const areas = g.append('g'); const paths = areas.selectAll('path.a').data(stack).join('path').attr('class', 'a').style('fill', s => colors[s.key]).attr('stroke', 'var(--paper)').attr('stroke-width', 1.5).attr('d', d3.area().x(d => x(d.data.date)).y0(d => y(d[0])).y1(d => y(d[1])).curve(d3.curveMonotoneX)).style('transition', 'opacity .3s');
+  clipGrow(fr, areas);
+  const last = data[data.length - 1]; const dl = g.append('g').attr('class', 'dl'); let prevY = -Infinity;
+  for (const s of stack) { const e = s[s.length - 1]; let ly = y((e[0] + e[1]) / 2) + 4; if (ly - prevY < 15) ly = prevY + 15; prevY = ly; dl.append('text').attr('x', w + 8).attr('y', ly).attr('class', ['Paytm', 'Navi', 'super.money'].includes(s.key) ? 'strong' : '').text(`${s.key} ${fmtPct(last[s.key])}`); }
+  const ann = g.append('g').attr('class', 'ann'); const ax = x(new Date(2024, 2, 1));
+  ann.append('line').attr('x1', ax).attr('x2', ax).attr('y1', -6).attr('y2', h).attr('stroke-dasharray', '3 3');
+  ann.append('text').attr('x', ax - 6).attr('y', -10).attr('text-anchor', 'end').text('RBI shuts Paytm Payments Bank, Mar 2024');
+  if (anim) { dl.attr('opacity', 0).transition().delay(1200).duration(500).attr('opacity', 1); }
+  crosshair(fr, x, data, (d, ev) => showTip(ev.clientX, ev.clientY, `${fmtMonth(d.date)} · ${d.appsCount} live apps`, keys.map(k => ({ label: k, value: fmtPct(d[k]), color: colors[k] }))));
+  legend('legend6', keys.map(k => ({ color: colors[k], label: k, key: k })), key => paths.style('opacity', s => key && s.key !== key ? 0.18 : 1));
+}
+
+/* ---------- 7. metro share ---------- */
+function renderChart7() {
+  const top = states.filter(s => s.state !== 'Unclassified').sort((a, b) => b.volume_mn - a.volume_mn).slice(0, 10);
+  const rows = top.map(s => { const ds = districts.filter(d => d.state === s.state).sort((a, b) => b.volume_mn - a.volume_mn); const metro = d3.sum(ds, d => d.volume_mn); return { state: s.state, name: titleCase(s.state), total: s.volume_mn, ds, metro, share: metro / s.volume_mn * 100, districtsN: s.districts }; });
+  const rowH = 38;
+  const fr = frame('chart7', { height: rowH * rows.length + 40, margin: { top: 26, right: 56, bottom: 8, left: 130 } }); const { g, w } = fr;
+  const x = d3.scaleLinear().domain([0, d3.max(rows, r => r.total)]).nice().range([0, w]), y = d3.scaleBand().domain(rows.map(r => r.state)).range([0, rowH * rows.length]).paddingInner(0.3);
+  g.append('g').attr('class', 'axis axis-x').attr('transform', 'translate(0,-8)').call(d3.axisTop(x).ticks(4).tickSize(0).tickPadding(4).tickFormat(v => fmtVol(v)));
+  g.append('g').selectAll('text').data(rows).join('text').attr('class', 'rowlabel').attr('x', -12).attr('y', r => y(r.state) + y.bandwidth() / 2 + 4).attr('text-anchor', 'end').text(r => r.name);
+  rows.forEach((r, ri) => {
+    const rg = g.append('g').attr('transform', `translate(0,${y(r.state)})`);
+    const bgr = rg.append('rect').attr('x', 0).attr('height', y.bandwidth()).style('fill', 'var(--de-emphasis-2)').attr('rx', 2)
+      .on('pointermove', ev => showTip(ev.clientX, ev.clientY, r.name, [{ label: 'All payments', value: fmtVol(r.total) }, { label: `Rest of state (${r.districtsN - r.ds.length} districts)`, value: fmtVol(r.total - r.metro) }])).on('pointerleave', hideTip);
+    if (anim) bgr.attr('width', 0).transition().delay(ri * 60).duration(DUR).ease(EASE).attr('width', x(r.total)); else bgr.attr('width', x(r.total));
+    let acc = 0;
+    r.ds.forEach((d, i) => {
+      const x0 = x(acc), x1 = x(acc + d.volume_mn); acc += d.volume_mn;
+      const seg = rg.append('rect').attr('x', x0).attr('height', y.bandwidth()).style('fill', S(1)).style('fill-opacity', 1 - Math.min(i, 4) * 0.14).attr('rx', 2)
+        .on('pointermove', ev => showTip(ev.clientX, ev.clientY, `${titleCase(d.district)}, ${r.name}`, [{ label: 'Payments', value: fmtVol(d.volume_mn) }, { label: 'Share of state', value: fmtPct(d.volume_mn / r.total * 100, 0) }, { label: 'Share of India', value: `${d.vol_share}%` }])).on('pointerleave', hideTip);
+      if (anim) seg.attr('width', 0).transition().delay(ri * 60 + 200 + i * 60).duration(700).ease(EASE).attr('width', Math.max(0, x1 - x0 - 2)); else seg.attr('width', Math.max(0, x1 - x0 - 2));
+      if (i === 0 && x1 - x0 > 100) rg.append('text').attr('class', 'inlabel').attr('x', x0 + 9).attr('y', y.bandwidth() / 2 + 4).text(titleCase(d.district).replace(' (Urban)', ' Urban'));
+    });
+    const pct = rg.append('text').attr('class', 'pct').attr('x', x(r.total) + 8).attr('y', y.bandwidth() / 2 + 4).text(`${Math.round(r.share)}%`);
+    if (anim) pct.attr('opacity', 0).transition().delay(ri * 60 + 700).duration(400).attr('opacity', 1);
+  });
+}
+
+/* ---------- lazy render on enter, instant re-render on resize ---------- */
+const renderers = { c1: renderChart1, c2: renderChart2, c3: renderChart3, c4: renderChart4, c5: renderChart5, c6: renderChart6, c7: renderChart7 };
+const rendered = new Set();
+const chartObs = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { const id = e.target.id; if (!rendered.has(id)) { rendered.add(id); anim = !reduced; renderers[id](); } chartObs.unobserve(e.target); } }, { rootMargin: '0px 0px -15% 0px' });
+document.querySelectorAll('section.chapter').forEach(s => chartObs.observe(s));
+let raf = 0, lastW = innerWidth;
+new ResizeObserver(() => { if (innerWidth === lastW) return; lastW = innerWidth; cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { anim = false; for (const id of rendered) renderers[id](); }); }).observe(document.querySelector('main'));
+</script>
+</body>
+</html>
