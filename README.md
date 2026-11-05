@@ -1,18 +1,18 @@
-# UPI became small change
+# UPI is now mostly small payments
 
 A live, interactive report built from NPCI's public UPI statistics, April 2016 to October 2026.
 
 **Live:** https://now.harssha.design/upi-six-charts/
 
-The thesis: UPI did not grow by moving more money per payment. It grew by swallowing the ₹65 cigarette, the ₹120 vada pav and the ₹214 grocery run. Seven claims, each with the chart that proves it.
+UPI does 25 billion payments a month and the average one is ₹1,238, smaller every year. The report shows where the growth came from: groceries, cigarettes, a few cities and two apps. Seven charts, one claim each.
 
-1. Growth fell from 56% to 23%. Nothing slowed down.
-2. UPI lost a fifth of its payments in April 2020. Once.
-3. People still get ₹2,400 a payment. Shops get ₹603.
-4. Brokers take 0.6% of merchant taps and 8.4% of the money.
-5. FamApp averages ₹132 a payment. Cred averages ₹3,881.
-6. PhonePe and Google Pay peaked at 87%. They hold 79% now.
-7. Bengaluru is 57% of Karnataka's UPI.
+1. UPI adds the same four billion payments every year.
+2. Only one month in ten years went backwards: April 2020.
+3. The average payment is shrinking. Shop payments are the reason.
+4. Shops get many tiny payments. Finance gets a few big ones.
+5. Every app, bank and state, ranked by the size of one payment.
+6. PhonePe and Google Pay own 79%. The rest is growing anyway.
+7. In most states, one city does most of the paying.
 
 ## Layout
 
