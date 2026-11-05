@@ -5,3 +5,5 @@ publish/
 index-render.html
 .DS_Store
 __pycache__/
+media/frames/
+media/out/

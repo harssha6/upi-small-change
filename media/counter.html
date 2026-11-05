@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>While you read this tweet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: #f3eee4; }
+  canvas { display: block; }
+  .warm { position: absolute; left: -9999px; font-family: Fraunces; font-weight: 700; }
+  .warm2 { position: absolute; left: -9999px; font-family: Inter; font-weight: 600; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1350"></canvas>
+<div class="warm">0123456789,</div><div class="warm2">0123456789</div>
+<script>
+const W = 1080, H = 1350;
+const PAPER = '#f3eee4', INK = '#15120e', MUTED = '#6f6960', ACCENT = '#d2501c';
+const RATE = 9508;            // payments per second, NPCI October 2026
+const CR_RATE = 1.18;         // crore rupees per second
+const UPDATE_EVERY = 1.0;     // seconds between counter re-forms
+const COUNT_UNTIL = 7.0;      // counter freezes here, then holds
+const DURATION = 8.6;
+const STRIDE = 6;
+const POOL = 420;             // particles per character slot
+const SLOTS = 6;              // "66,556" is six characters
+const COLORS = [ACCENT, ACCENT, ACCENT, '#e8662f', INK, INK, '#6f6960', '#b9b1a2', '#f2a57c'];
+
+// deterministic rng
+let seed = 7; const rnd = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+
+const c = document.getElementById('c'), ctx = c.getContext('2d');
+const off = document.createElement('canvas'); const octx = off.getContext('2d');
+
+const NUM_FONT = '700 232px Fraunces'; const NUM_X = 80, NUM_BASE = 640;
+const fmt = n => n.toLocaleString('en-IN');
+
+// sample glyph targets for a string laid out left-aligned at NUM_X / NUM_BASE
+function glyphTargets(str) {
+  octx.font = NUM_FONT;
+  const out = []; let x = NUM_X;
+  for (const ch of str) {
+    const w = octx.measureText(ch).width;
+    off.width = Math.ceil(w) + 40; off.height = 330;
+    octx.font = NUM_FONT; octx.fillStyle = '#000'; octx.clearRect(0, 0, off.width, off.height);
+    octx.fillText(ch, 20, 260);
+    const img = octx.getImageData(0, 0, off.width, off.height).data; const pts = [];
+    for (let yy = 0; yy < off.height; yy += STRIDE) for (let xx = 0; xx < off.width; xx += STRIDE) {
+      if (img[(yy * off.width + xx) * 4 + 3] > 120) pts.push({ x: x - 20 + xx + (rnd() - .5) * 2, y: NUM_BASE - 260 + yy + (rnd() - .5) * 2 });
+    }
+    pts.sort((a, b) => a.y - b.y || a.x - b.x);
+    out.push(pts); x += w + (ch === ',' ? 2 : 4);
+  }
+  return out;
+}
+
+// border homes: evenly spaced around an inset rectangle
+const homes = []; { const inset = 44, step = 13; const per = Math.floor((W - 2 * inset) / step), perV = Math.floor((H - 2 * inset) / step);
+  for (let i = 0; i < per; i++) { homes.push({ x: inset + i * step, y: inset }); homes.push({ x: inset + i * step, y: H - inset }); }
+  for (let i = 1; i < perV; i++) { homes.push({ x: inset, y: inset + i * step }); homes.push({ x: W - inset, y: inset + i * step }); } }
+
+const particles = [];
+for (let s = 0; s < SLOTS; s++) for (let j = 0; j < POOL; j++) {
+  const hm = homes[(s * POOL + j) % homes.length];
+  const col = COLORS[Math.floor(rnd() * COLORS.length)];
+  particles.push({ slot: s, j, x: hm.x + (rnd() - .5) * 6, y: hm.y + (rnd() - .5) * 6, vx: 0, vy: 0, hx: hm.x, hy: hm.y, tx: hm.x, ty: hm.y, col, r: 4 + rnd() * 2.2, k: 0.11 + rnd() * 0.05, drag: 0.76 + rnd() * 0.06, onGlyph: false });
+}
+
+let shown = '', lastUpdate = -1, T = 0;
+function retarget(str) {
+  const g = glyphTargets(str);
+  for (const p of particles) {
+    const pts = g[p.slot];
+    if (pts && p.j < pts.length) { const t = pts[p.j]; p.tx = t.x; p.ty = t.y; p.onGlyph = true; }
+    else { p.tx = p.hx; p.ty = p.hy; p.onGlyph = false; }
+  }
+  shown = str;
+}
+
+function step(dt) {
+  T += dt;
+  const tc = Math.min(T, COUNT_UNTIL); const k = Math.floor(tc / UPDATE_EVERY);
+  const key = T >= COUNT_UNTIL ? -2 : k;
+  if (key !== lastUpdate) { lastUpdate = key; retarget(fmt(Math.floor(RATE * (T >= COUNT_UNTIL ? COUNT_UNTIL : k * UPDATE_EVERY)))); }
+  for (const p of particles) {
+    const settled = p.onGlyph ? 1 : 0.35;
+    p.vx += (p.tx - p.x) * p.k * settled + (rnd() - .5) * (p.onGlyph ? 0.12 : 0.7);
+    p.vy += (p.ty - p.y) * p.k * settled + (rnd() - .5) * (p.onGlyph ? 0.12 : 0.7);
+    p.vx *= p.drag; p.vy *= p.drag; p.x += p.vx; p.y += p.vy;
+  }
+}
+
+function render(trailsOnly) {
+  // trail fade
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = 'rgba(243,238,228,0.42)'; ctx.fillRect(0, 0, W, H);
+  // trails: thin line from previous position
+  ctx.lineWidth = 1.1;
+  for (const p of particles) { const sp = Math.hypot(p.vx, p.vy); if (sp < 0.8) continue; ctx.strokeStyle = p.col; ctx.globalAlpha = Math.min(0.5, sp / 18); ctx.beginPath(); ctx.moveTo(p.x - p.vx * 1.6, p.y - p.vy * 1.6); ctx.lineTo(p.x, p.y); ctx.stroke(); }
+  ctx.globalAlpha = 1;
+  for (const p of particles) { ctx.fillStyle = p.col; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); }
+  // type layer on top (clean paper under text so trails do not run through it)
+  ctx.fillStyle = INK; ctx.textBaseline = 'alphabetic';
+  ctx.font = '600 24px Inter'; ctx.letterSpacing = '0.18em'; ctx.fillStyle = MUTED;
+  ctx.fillText('WHILE YOU READ THIS TWEET', 80, 186);
+  ctx.letterSpacing = '0px';
+  // stopwatch, top right
+  const tt = Math.min(T, COUNT_UNTIL); const mm = Math.floor(tt / 60), ss = Math.floor(tt % 60), ds = Math.floor((tt * 10) % 10);
+  ctx.font = '500 30px Inter'; ctx.fillStyle = T >= COUNT_UNTIL ? ACCENT : INK; ctx.textAlign = 'right'; ctx.fontVariantNumeric = 'tabular-nums';
+  ctx.fillText(`${mm}:${String(ss).padStart(2, '0')}.${ds}`, W - 80, 190); ctx.textAlign = 'left';
+  // line under the number
+  ctx.font = '600 72px Fraunces'; ctx.fillStyle = INK;
+  ctx.fillText('UPI payments happened.', 80, 790);
+  const cr = CR_RATE * tt;
+  ctx.font = '400 32px Inter'; ctx.fillStyle = MUTED;
+  ctx.fillText(`₹${cr.toFixed(1)} crore moved. One payment every 0.1 ms.`, 80, 860);
+  // footer
+  ctx.font = '400 24px Inter'; ctx.fillStyle = MUTED;
+  ctx.fillText("At NPCI's October 2026 rate: 9,508 a second, ₹1,238 each.", 80, H - 150);
+  ctx.fillStyle = INK; ctx.font = '500 24px Inter';
+  ctx.fillText('now.harssha.design/upi-six-charts', 80, H - 110);
+}
+
+window.__ready = document.fonts.ready.then(() => { ctx.fillStyle = PAPER; ctx.fillRect(0, 0, W, H); retarget('0'); return true; });
+window.__frame = dt => { step(dt); render(); return shown; };
+window.DURATION = DURATION;
+// live preview when opened in a browser
+if (!navigator.webdriver) window.__ready.then(() => { let last = performance.now(); const loop = now => { const dt = Math.min(0.05, (now - last) / 1000); last = now; if (T < DURATION) window.__frame(dt); requestAnimationFrame(loop); }; requestAnimationFrame(loop); });
+</script>
+</body>
+</html>
