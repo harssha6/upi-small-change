@@ -145,8 +145,16 @@
   #tip .r .v { font-weight: 600; font-variant-numeric: tabular-nums; }
 
   footer { margin-top: 110px; border-top: 1px solid var(--rule); padding: 28px 0 60px; color: var(--muted); font-size: 13px; }
-  footer .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  footer .cols { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
   footer p { margin: 0 0 8px; max-width: 60ch; }
+  footer h4 { margin: 0 0 8px; font: 600 11px/1 Inter, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+  footer ul { list-style: none; margin: 0; padding: 0; }
+  footer li { margin: 0 0 6px; }
+  footer a { text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+  footer a:hover { color: var(--ink); text-decoration-color: var(--accent); }
+  footer .made { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--rule); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; align-items: baseline; }
+  footer .made .by { font-family: Fraunces, serif; font-size: 16px; color: var(--ink); }
+  footer .made .by a { text-decoration-color: var(--accent); }
   @media (max-width: 720px) { footer .cols { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -180,7 +188,7 @@
 
 <main>
   <section class="chapter wrap" id="c1">
-    <div class="head reveal"><div class="no">01</div><div><h2>It stopped compounding. It now adds the same four billion a year.</h2><p class="intro">How many extra monthly payments UPI picked up each year, October to October. The bar is the addition; the small number is the growth rate it implies.</p></div></div>
+    <div class="head reveal"><div class="no">01</div><div><h2>Growth fell from 56% to 23%. Nothing slowed down.</h2><p class="intro">How many extra monthly payments UPI picked up each year, October to October. The bar is the addition; the small number is the growth rate it implies.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">Payments added per month, year on year</div><div class="s">billions of monthly transactions gained, October vs the previous October</div></div><div class="chart" id="chart1"></div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">A straight line in volume is a falling line in percent.</p>
@@ -189,7 +197,7 @@
   </section>
 
   <section class="chapter wrap" id="c2">
-    <div class="head reveal"><div class="no">02</div><div><h2>Ten years, one crash, and a February problem.</h2><p class="intro">Every month since 2018 as a cell. Colour is the change from the month before. Blue grew, orange shrank.</p></div></div>
+    <div class="head reveal"><div class="no">02</div><div><h2>UPI lost a fifth of its payments in April 2020. Once.</h2><p class="intro">Every month since 2018 as a cell. Colour is the change from the month before. Blue grew, orange shrank.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">Month-on-month change in payments</div><div class="s">percent vs the previous month</div></div><div class="chart" id="chart2"></div><div class="legend" id="legend2"></div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">The lockdown is the only real crash.</p>
@@ -198,7 +206,7 @@
   </section>
 
   <section class="chapter wrap" id="c3">
-    <div class="head reveal"><div class="no">03</div><div><h2>The average payment halved. Nobody started paying less.</h2><p class="intro">Average rupees per payment, split by who is being paid: a person, or a merchant. The blended line is what NPCI's headline numbers imply.</p></div></div>
+    <div class="head reveal"><div class="no">03</div><div><h2>People still get ₹2,400 a payment. Shops get ₹603.</h2><p class="intro">Average rupees per payment, split by who is being paid: a person, or a merchant. The blended line is what NPCI's headline numbers imply.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">Average ticket, person vs merchant</div><div class="s">₹ per payment, January 2022 to October 2026</div></div><div class="chart" id="chart3"></div><div class="legend" id="legend3"></div><div class="chart" id="chart3b" style="margin-top:12px"></div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">This is a mix effect.</p>
@@ -213,7 +221,7 @@
   </figure>
 
   <section class="chapter wrap" id="c4">
-    <div class="head reveal"><div class="no">04</div><div><h2>Merchants are wide and short. Finance is thin and tall.</h2><p class="intro">Every merchant category NPCI reports for September 2026. Width is its share of merchant payments. Height is the average ticket. Area is the money.</p></div></div>
+    <div class="head reveal"><div class="no">04</div><div><h2>Brokers take 0.6% of merchant taps and 8.4% of the money.</h2><p class="intro">Every merchant category NPCI reports for September 2026. Width is its share of merchant payments. Height is the average ticket. Area is the money.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">The merchant skyline</div><div class="seg" role="group" aria-label="Sort"><button data-sort="ticket" aria-pressed="true">Sort by ticket</button><button data-sort="share" aria-pressed="false">Sort by share</button></div></div><div class="chart" id="chart4"></div><div class="note">Hover any block. The two finance needles break the frame at ₹2,000 and are labelled. "Others" is NPCI's bucket for everything outside its top 29 categories, in gray.</div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">Groceries alone are a quarter of merchant payments, at ₹214 each.</p>
@@ -228,7 +236,7 @@
   </figure>
 
   <section class="chapter wrap" id="c5">
-    <div class="head reveal"><div class="no">05</div><div><h2>The rupee ladder: everything in UPI, placed by what one payment is worth.</h2><p class="intro">Merchant categories, apps, banks and states on the same log scale of average ticket. The dashed lines are the two halves of the network from chapter 3.</p></div></div>
+    <div class="head reveal"><div class="no">05</div><div><h2>FamApp averages ₹132 a payment. Cred averages ₹3,881.</h2><p class="intro">Merchant categories, apps, banks and states on the same log scale of average ticket. The dashed lines are the two halves of the network from chapter 3.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">Average ₹ per payment, September 2026</div><div class="seg" role="group" aria-label="Lanes" id="lanes"><button data-lane="all" aria-pressed="true">All</button><button data-lane="0" aria-pressed="false">Merchants</button><button data-lane="1" aria-pressed="false">Apps</button><button data-lane="2" aria-pressed="false">Banks</button><button data-lane="3" aria-pressed="false">States</button></div></div><div class="chart" id="chart5"></div><div class="note">Cred is placed at its last reported month (May 2026). Banks are the top 12 by volume plus India Post Payments Bank. States exclude the unclassified 44%.</div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">Ticket size tells you who something is for.</p>
@@ -237,7 +245,7 @@
   </section>
 
   <section class="chapter wrap" id="c6">
-    <div class="head reveal"><div class="no">06</div><div><h2>The duopoly is not cracking from the top. It is being nibbled from the bottom.</h2><p class="intro">Share of payments by app, January 2022 to September 2026. The two incumbents are drawn in gray so the movement shows. Hover a name to isolate it.</p></div></div>
+    <div class="head reveal"><div class="no">06</div><div><h2>PhonePe and Google Pay peaked at 87%. They hold 79% now.</h2><p class="intro">Share of payments by app, January 2022 to September 2026. The two incumbents are drawn in gray so the movement shows. Hover a name to isolate it.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">App share of UPI payments</div><div class="s">percent of monthly volume</div></div><div class="chart" id="chart6"></div><div class="legend" id="legend6"></div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">Paytm's cliff is a regulator, not a competitor.</p>
@@ -247,12 +255,12 @@
 
   <figure class="bleed" data-bg="assets/street.jpg" data-pos="center 40%">
     <div class="bg"></div><div class="shade"></div>
-    <div class="inner"><div class="huge num">712M</div><div class="say"><b>Bengaluru Urban's payments in one month.</b> One district, more than 30 of India's 37 states and territories. The map of UPI is a map of a few dozen cities.</div></div>
+    <div class="inner"><div class="huge num">712M</div><div class="say"><b>Bengaluru Urban's payments in one month.</b> One district, more than 31 of India's 36 states and union territories. The map of UPI is a map of a few dozen cities.</div></div>
     <div class="credit">Chennai · photo David De Gendt, Unsplash</div>
   </figure>
 
   <section class="chapter wrap" id="c7">
-    <div class="head reveal"><div class="no">07</div><div><h2>A state's UPI is mostly its one metro.</h2><p class="intro">The ten biggest states by payments, September 2026. Coloured segments are the districts that make NPCI's national top 30. Gray is the rest of the state.</p></div></div>
+    <div class="head reveal"><div class="no">07</div><div><h2>Bengaluru is 57% of Karnataka's UPI.</h2><p class="intro">The ten biggest states by payments, September 2026. Coloured segments are the districts that make NPCI's national top 30. Gray is the rest of the state.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">Top-30 districts inside their states</div><div class="s">millions of payments · the number at the end is the metro share</div></div><div class="chart" id="chart7"></div><div class="note">Hover a segment for the district.</div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">Maharashtra is three quarters Mumbai, Pune, Thane and friends.</p>
@@ -262,8 +270,26 @@
 
   <footer class="wrap">
     <div class="cols">
-      <div><p><b>Source.</b> NPCI product and ecosystem statistics for UPI, fetched November 2026. Headline volume and value run to October 2026. App, merchant and state tables run to September 2026. Average ticket is value divided by volume. Merchant categories use NPCI's MCC grouping; "Others" is their bucket.</p></div>
-      <div><p><b>Photos.</b> Rudra Gupta, Urip Dunker, rupixen and David De Gendt, all on Unsplash. <b>Type.</b> Fraunces and Inter. Built with D3 from a static copy of the data; charts redraw on resize and follow your system theme.</p></div>
+      <div>
+        <h4>Sources</h4>
+        <ul>
+          <li><a href="https://www.npci.org.in/product/upi/product-statistics" target="_blank" rel="noopener">NPCI, UPI product statistics</a>: monthly volume and value, April 2016 to October 2026.</li>
+          <li><a href="https://www.npci.org.in/what-we-do/upi/upi-ecosystem-statistics" target="_blank" rel="noopener">NPCI, UPI ecosystem statistics</a>: apps, P2P and P2M, state and district, top banks and merchant categories, September 2026.</li>
+          <li>Fetched November 2026. Data as published; no estimates added.</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Method</h4>
+        <p>Average ticket is value divided by volume. Merchant categories use NPCI's MCC grouping; "Others" is their bucket. 44% of state-wise volume is unclassified in the source and is left out of chapter 7. Charts are D3 drawn from a static copy of the data; they redraw on resize and follow your system theme.</p>
+      </div>
+      <div>
+        <h4>Credits</h4>
+        <p><b>Photos.</b> Rudra Gupta, Urip Dunker, rupixen and David De Gendt, all on Unsplash. <b>Type.</b> Fraunces and Inter. <b>Code.</b> <a href="https://github.com/harssha6/upi-small-change" target="_blank" rel="noopener">github.com/harssha6/upi-small-change</a>.</p>
+      </div>
+    </div>
+    <div class="made">
+      <div class="by">Made by <a href="https://harssha.com" target="_blank" rel="noopener">Harssha Vardan</a> · <a href="https://x.com/Harsshavardan3" target="_blank" rel="noopener">@Harsshavardan3 on X</a></div>
+      <div>Hosted with <a href="https://now.harssha.design/" target="_blank" rel="noopener">ownnow</a></div>
     </div>
   </footer>
 </main>
@@ -469,12 +495,15 @@ function renderChart4() {
   const want = new Map([['Cigar shops and stands', 'Cigarette stands ₹65'], ['Fast food restaurants', 'Fast food ₹120'], ['Eating places and restaurants', 'Restaurants ₹167'], ['Groceries and supermarkets', 'Groceries ₹214 · 26% of taps'], ['Fuel / service stations', 'Fuel ₹569'], ['Telecom services', 'Telecom ₹287'], ['Others', 'Others ₹1,389 · 45% of money'], ['Utilities (electric gas water)', 'Utilities ₹1,639'], ['Debt collection agencies', 'Debt collection ₹3,434 ↑ · 8.6% of money'], ['Securities brokers and dealers', 'Securities brokers ₹8,090 ↑ · 8.4% of money']]);
   const dl = g.append('g').attr('class', 'dl'); const placed = []; const estW = t => t.length * 6.6;
   const collides = (lx0, lx1, ly) => placed.some(p => lx0 < p.x1 + 8 && lx1 > p.x0 - 8 && Math.abs(p.y - ly) < 22);
-  for (const r of rows) {
-    const t = want.get(r.description); if (!t) continue;
+  const narrow = w < 560, keep = new Set(['Groceries and supermarkets', 'Cigar shops and stands', 'Securities brokers and dealers', 'Others']);
+  const labelOrder = [...rows].sort((a, b) => (keep.has(b.description) ? 1 : 0) - (keep.has(a.description) ? 1 : 0));
+  for (const r of labelOrder) {
+    const t = want.get(r.description); if (!t || (narrow && !keep.has(r.description))) continue;
     const cx = (x(r.x0) + x(r.x1)) / 2, wide = x(r.x1) - x(r.x0) > 36, tw = estW(t); let anchor = 'middle', lx = cx;
     if (cx + tw / 2 > w) { anchor = 'end'; lx = Math.min(w, cx + 4); } else if (cx - tw / 2 < 0) { anchor = 'start'; lx = cx - 4; }
     const lx0 = anchor === 'middle' ? lx - tw / 2 : anchor === 'end' ? lx - tw : lx, lx1 = lx0 + tw;
     const start = wide ? y(top(r)) - 8 : -12; let ly = start; while (collides(lx0, lx1, ly)) ly -= 16;
+    if (ly < -76) continue;
     placed.push({ x0: lx0, x1: lx1, y: ly });
     if (!wide || ly !== start) dl.append('path').attr('d', `M${cx},${y(top(r)) - (r.ticket > CAP ? 12 : 2)} V${ly + 3}`);
     dl.append('text').attr('x', lx).attr('y', ly).attr('text-anchor', anchor).attr('class', /Groceries|Securities/.test(r.description) ? 'strong' : '').text(t);

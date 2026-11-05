@@ -6,13 +6,13 @@ A live, interactive report built from NPCI's public UPI statistics, April 2016 t
 
 The thesis: UPI did not grow by moving more money per payment. It grew by swallowing the ₹65 cigarette, the ₹120 vada pav and the ₹214 grocery run. Seven claims, each with the chart that proves it.
 
-1. It stopped compounding. It now adds the same four billion a year.
-2. Ten years, one crash, and a February problem.
-3. The average payment halved. Nobody started paying less.
-4. Merchants are wide and short. Finance is thin and tall.
-5. The rupee ladder: everything in UPI, placed by what one payment is worth.
-6. The duopoly is not cracking from the top. It is being nibbled from the bottom.
-7. A state's UPI is mostly its one metro.
+1. Growth fell from 56% to 23%. Nothing slowed down.
+2. UPI lost a fifth of its payments in April 2020. Once.
+3. People still get ₹2,400 a payment. Shops get ₹603.
+4. Brokers take 0.6% of merchant taps and 8.4% of the money.
+5. FamApp averages ₹132 a payment. Cred averages ₹3,881.
+6. PhonePe and Google Pay peaked at 87%. They hold 79% now.
+7. Bengaluru is 57% of Karnataka's UPI.
 
 ## Layout
 
