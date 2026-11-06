@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>UPI is now mostly small payments. A live report from NPCI's numbers</title>
+<title>Bengaluru does more UPI than 31 states. A UPI study from NPCI's numbers</title>
 <meta name="description" content="Ten years of UPI data, read as a story: the network grew by swallowing the ₹65 cigarette and the ₹214 grocery run.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..800,50;1,9..144,300..800,50&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -160,9 +160,9 @@
 </head>
 <body>
 <nav class="nav" id="nav" aria-label="Chapters">
-  <a class="mark" href="#top" style="text-decoration:none"><img src="assets/upi.svg" alt="UPI"> <span>Small payments</span></a>
+  <a class="mark" href="#top" style="text-decoration:none"><img src="assets/upi.svg" alt="UPI"> <span>UPI study</span></a>
   <ol>
-    <li><a href="#c1">01</a></li><li><a href="#c2">02</a></li><li><a href="#c3">03</a></li><li><a href="#c4">04</a></li><li><a href="#c5">05</a></li><li><a href="#c6">06</a></li><li><a href="#c7">07</a></li>
+    <li><a href="#c7">01</a></li><li><a href="#c1">02</a></li><li><a href="#c2">03</a></li><li><a href="#c3">04</a></li><li><a href="#c4">05</a></li><li><a href="#c5">06</a></li><li><a href="#c6">07</a></li>
   </ol>
   <button class="theme" id="theme">Dark</button>
 </nav>
@@ -171,9 +171,9 @@
   <div class="bg" id="herobg"></div><div class="shade"></div>
   <div class="inner">
     <div>
-      <div class="kicker fx">A live report from NPCI's UPI statistics · 2016 to 2026</div>
-      <h1 class="fx d1">UPI is now mostly small payments.</h1>
-      <p class="lede fx d2">UPI does 25 billion payments a month. The average one is ₹1,238, and it gets smaller every year. This report shows where the growth came from: groceries, cigarettes, a few cities and two apps. Seven charts.</p>
+      <div class="kicker fx">A UPI study from NPCI's statistics · 2016 to 2026</div>
+      <h1 class="fx d1">Bengaluru does more UPI than 31 states.</h1>
+      <p class="lede fx d2">712 million payments in one month, from one district. UPI is 25 billion payments a month, and it is lopsided: a few cities, two apps and a flood of tiny payments. Seven charts on where it really happens.</p>
     </div>
     <div class="live fx d4">
       <div class="big num" id="h-count">0</div>
@@ -187,8 +187,17 @@
 </header>
 
 <main>
+  <section class="chapter wrap" id="c7">
+    <div class="head reveal"><div class="no">01</div><div><h2>In most states, one city does most of the paying.</h2><p class="intro">The ten biggest states by payments, September 2026. Coloured segments are the districts that make NPCI's national top 30. Gray is the rest of the state.</p></div></div>
+    <figure class="fig reveal"><div class="cap"><div class="t">Top-30 districts inside their states</div><div class="s">millions of payments · the number at the end is the metro share</div></div><div class="chart" id="chart7"></div><div class="note">Hover a segment for the district.</div></figure>
+    <aside class="sowhat reveal"><h3>So what</h3>
+      <p class="lead">Bengaluru Urban alone did 712 million payments in September, more than 31 of India's 36 states and union territories.</p>
+      <p>Maharashtra is three quarters Mumbai, Pune, Thane and friends. Karnataka is 57% Bengaluru. Telangana is two thirds the Hyderabad cluster. Uttar Pradesh, the most populous state, is the exception: its three top-30 districts add up to a third, and the rest is spread across 72 others.</p>
+      <p>One caveat that should sit on every geography chart of UPI: 44% of all payments carry no state at all in NPCI's data. The ranking is of the classified half.</p></aside>
+  </section>
+
   <section class="chapter wrap" id="c1">
-    <div class="head reveal"><div class="no">01</div><div><h2>UPI adds the same four billion payments every year.</h2><p class="intro">How many extra monthly payments UPI picked up each year, October to October. The bar is the addition; the small number is the growth rate it implies.</p></div></div>
+    <div class="head reveal"><div class="no">02</div><div><h2>UPI adds the same four billion payments every year.</h2><p class="intro">How many extra monthly payments UPI picked up each year, October to October. The bar is the addition; the small number is the growth rate it implies.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">Payments added per month, year on year</div><div class="s">billions of monthly transactions gained, October vs the previous October</div></div><div class="chart" id="chart1"></div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">A straight line in volume is a falling line in percent.</p>
@@ -197,16 +206,16 @@
   </section>
 
   <section class="chapter wrap" id="c2">
-    <div class="head reveal"><div class="no">02</div><div><h2>Only one month in ten years went backwards: April 2020.</h2><p class="intro">Every month since 2018 as a cell. Colour is the change from the month before. Blue grew, orange shrank.</p></div></div>
+    <div class="head reveal"><div class="no">03</div><div><h2>Only one month in ten years went backwards: April 2020.</h2><p class="intro">Every month since 2018 as a cell. Colour is the change from the month before. Blue grew, orange shrank.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">Month-on-month change in payments</div><div class="s">percent vs the previous month</div></div><div class="chart" id="chart2"></div><div class="legend" id="legend2"></div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">The lockdown is the only real crash.</p>
       <p>April 2020 lost a fifth of all payments in one month. Everything else in orange is calendar arithmetic: February has three fewer days, and November gives back part of the Diwali bump in October.</p>
-      <p>The grid also shows the compounding fade from chapter 1 another way. The early rows are deep blue almost everywhere. By 2025 a typical month is a pale 1 to 3%.</p></aside>
+      <p>The grid also shows the compounding fade from chapter 2 another way. The early rows are deep blue almost everywhere. By 2025 a typical month is a pale 1 to 3%.</p></aside>
   </section>
 
   <section class="chapter wrap" id="c3">
-    <div class="head reveal"><div class="no">03</div><div><h2>The average payment is shrinking. Shop payments are the reason.</h2><p class="intro">Average rupees per payment, split by who is being paid: a person, or a merchant. The blended line is what NPCI's headline numbers imply.</p></div></div>
+    <div class="head reveal"><div class="no">04</div><div><h2>The average payment is shrinking. Shop payments are the reason.</h2><p class="intro">Average rupees per payment, split by who is being paid: a person, or a merchant. The blended line is what NPCI's headline numbers imply.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">Average ticket, person vs merchant</div><div class="s">₹ per payment, January 2022 to October 2026</div></div><div class="chart" id="chart3"></div><div class="legend" id="legend3"></div><div class="chart" id="chart3b" style="margin-top:12px"></div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">This is a mix effect.</p>
@@ -221,7 +230,7 @@
   </figure>
 
   <section class="chapter wrap" id="c4">
-    <div class="head reveal"><div class="no">04</div><div><h2>Shops get many tiny payments. Finance gets a few big ones.</h2><p class="intro">Every merchant category NPCI reports for September 2026. Width is its share of merchant payments. Height is the average ticket. Area is the money.</p></div></div>
+    <div class="head reveal"><div class="no">05</div><div><h2>Shops get many tiny payments. Finance gets a few big ones.</h2><p class="intro">Every merchant category NPCI reports for September 2026. Width is its share of merchant payments. Height is the average ticket. Area is the money.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">The merchant skyline</div><div class="seg" role="group" aria-label="Sort"><button data-sort="ticket" aria-pressed="true">Sort by ticket</button><button data-sort="share" aria-pressed="false">Sort by share</button></div></div><div class="chart" id="chart4"></div><div class="note">Hover any block. The two finance needles break the frame at ₹2,000 and are labelled. "Others" is NPCI's bucket for everything outside its top 29 categories, in gray.</div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">Groceries alone are a quarter of merchant payments, at ₹214 each.</p>
@@ -236,7 +245,7 @@
   </figure>
 
   <section class="chapter wrap" id="c5">
-    <div class="head reveal"><div class="no">05</div><div><h2>Every app, bank and state, ranked by the size of one payment.</h2><p class="intro">Merchant categories, apps, banks and states on the same log scale of average ticket. The dashed lines are the two halves of the network from chapter 3.</p></div></div>
+    <div class="head reveal"><div class="no">06</div><div><h2>Every app, bank and state, ranked by the size of one payment.</h2><p class="intro">Merchant categories, apps, banks and states on the same log scale of average ticket. The dashed lines are the two halves of the network from chapter 4.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">Average ₹ per payment, September 2026</div><div class="seg" role="group" aria-label="Lanes" id="lanes"><button data-lane="all" aria-pressed="true">All</button><button data-lane="0" aria-pressed="false">Merchants</button><button data-lane="1" aria-pressed="false">Apps</button><button data-lane="2" aria-pressed="false">Banks</button><button data-lane="3" aria-pressed="false">States</button></div></div><div class="chart" id="chart5"></div><div class="note">Cred is placed at its last reported month (May 2026). Banks are the top 12 by volume plus India Post Payments Bank. States exclude the unclassified 44%.</div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">Ticket size tells you who something is for.</p>
@@ -245,7 +254,7 @@
   </section>
 
   <section class="chapter wrap" id="c6">
-    <div class="head reveal"><div class="no">06</div><div><h2>PhonePe and Google Pay own 79%. The rest is growing anyway.</h2><p class="intro">Share of payments by app, January 2022 to September 2026. The two incumbents are drawn in gray so the movement shows. Hover a name to isolate it.</p></div></div>
+    <div class="head reveal"><div class="no">07</div><div><h2>PhonePe and Google Pay own 79%. The rest is growing anyway.</h2><p class="intro">Share of payments by app, January 2022 to September 2026. The two incumbents are drawn in gray so the movement shows. Hover a name to isolate it.</p></div></div>
     <figure class="fig reveal"><div class="cap"><div class="t">App share of UPI payments</div><div class="s">percent of monthly volume</div></div><div class="chart" id="chart6"></div><div class="legend" id="legend6"></div></figure>
     <aside class="sowhat reveal"><h3>So what</h3>
       <p class="lead">Paytm's cliff is a regulator, not a competitor.</p>
@@ -253,20 +262,6 @@
       <p>Since then the pair has slipped back to 79%, and the gain went to apps that did not exist in this table in 2023. Navi is at 4.8% and super.money at 1.7%, both with tickets under ₹500. The long tail went from 1.4% to 4.7%, and the number of live apps from 59 to 96.</p></aside>
   </section>
 
-  <figure class="bleed" data-bg="assets/street.jpg" data-pos="center 40%">
-    <div class="bg"></div><div class="shade"></div>
-    <div class="inner"><div class="huge num">712M</div><div class="say"><b>Bengaluru Urban's payments in one month.</b> One district, more than 31 of India's 36 states and union territories. The map of UPI is a map of a few dozen cities.</div></div>
-    <div class="credit">Chennai · photo David De Gendt, Unsplash</div>
-  </figure>
-
-  <section class="chapter wrap" id="c7">
-    <div class="head reveal"><div class="no">07</div><div><h2>In most states, one city does most of the paying.</h2><p class="intro">The ten biggest states by payments, September 2026. Coloured segments are the districts that make NPCI's national top 30. Gray is the rest of the state.</p></div></div>
-    <figure class="fig reveal"><div class="cap"><div class="t">Top-30 districts inside their states</div><div class="s">millions of payments · the number at the end is the metro share</div></div><div class="chart" id="chart7"></div><div class="note">Hover a segment for the district.</div></figure>
-    <aside class="sowhat reveal"><h3>So what</h3>
-      <p class="lead">Maharashtra is three quarters Mumbai, Pune, Thane and friends.</p>
-      <p>Karnataka is 57% Bengaluru. Telangana is two thirds the Hyderabad cluster. Uttar Pradesh, the most populous state, is the exception: its three top-30 districts add up to a third, and the rest is spread across 72 others.</p>
-      <p>One caveat that should sit on every geography chart of UPI: 44% of all payments carry no state at all in NPCI's data. The ranking is of the classified half.</p></aside>
-  </section>
 
   <footer class="wrap">
     <div class="cols">
@@ -280,11 +275,11 @@
       </div>
       <div>
         <h4>Method</h4>
-        <p>Average ticket is value divided by volume. Merchant categories use NPCI's MCC grouping; "Others" is their bucket. 44% of state-wise volume is unclassified in the source and is left out of chapter 7. Charts are D3 drawn from a static copy of the data; they redraw on resize and follow your system theme.</p>
+        <p>Average ticket is value divided by volume. Merchant categories use NPCI's MCC grouping; "Others" is their bucket. 44% of state-wise volume is unclassified in the source and is left out of chapter 1. Charts are D3 drawn from a static copy of the data; they redraw on resize and follow your system theme.</p>
       </div>
       <div>
         <h4>Credits</h4>
-        <p><b>Photos.</b> Rudra Gupta, Urip Dunker, rupixen and David De Gendt, all on Unsplash. <b>Type.</b> Fraunces and Inter. <b>Code.</b> <a href="https://github.com/harssha6/upi-small-change" target="_blank" rel="noopener">github.com/harssha6/upi-small-change</a>.</p>
+        <p><b>Photos.</b> Rudra Gupta, Urip Dunker and rupixen, all on Unsplash. <b>Type.</b> Fraunces and Inter. <b>Code.</b> <a href="https://github.com/harssha6/upi-study" target="_blank" rel="noopener">github.com/harssha6/upi-study</a>.</p>
       </div>
     </div>
     <div class="made">
@@ -590,7 +585,7 @@ function renderChart7() {
   const rowH = 38;
   const fr = frame('chart7', { height: rowH * rows.length + 40, margin: { top: 26, right: 56, bottom: 8, left: 130 } }); const { g, w } = fr;
   const x = d3.scaleLinear().domain([0, d3.max(rows, r => r.total)]).nice().range([0, w]), y = d3.scaleBand().domain(rows.map(r => r.state)).range([0, rowH * rows.length]).paddingInner(0.3);
-  g.append('g').attr('class', 'axis axis-x').attr('transform', 'translate(0,-8)').call(d3.axisTop(x).ticks(4).tickSize(0).tickPadding(4).tickFormat(v => fmtVol(v)));
+  g.append('g').attr('class', 'axis axis-x').attr('transform', 'translate(0,-8)').call(d3.axisTop(x).ticks(w < 360 ? 2 : 4).tickSize(0).tickPadding(4).tickFormat(v => fmtVol(v)));
   g.append('g').selectAll('text').data(rows).join('text').attr('class', 'rowlabel').attr('x', -12).attr('y', r => y(r.state) + y.bandwidth() / 2 + 4).attr('text-anchor', 'end').text(r => r.name);
   rows.forEach((r, ri) => {
     const rg = g.append('g').attr('transform', `translate(0,${y(r.state)})`);

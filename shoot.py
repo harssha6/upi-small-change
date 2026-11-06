@@ -26,7 +26,7 @@ async def main():
         for i in range(1, 8):
             box = await docbox(f'#c{i}')
             await pg.screenshot(path=f"shots/c{i}.png", full_page=True, clip={"x": 0, "y": box["y"], "width": W, "height": min(box["h"], 1100)})
-        for i in range(3):
+        for i in range(await pg.evaluate("document.querySelectorAll('.bleed').length")):
             box = await docbox('.bleed', i); await pg.screenshot(path=f"shots/bleed{i}.png", full_page=True, clip={"x": 0, "y": box["y"], "width": W, "height": box["h"]})
         await pg.click('#theme'); await pg.wait_for_timeout(400)
         await pg.screenshot(path=f"shots/dark-{W}.png", full_page=True)

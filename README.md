@@ -1,18 +1,18 @@
-# UPI is now mostly small payments
+# Bengaluru does more UPI than 31 states
 
 A live, interactive report built from NPCI's public UPI statistics, April 2016 to October 2026.
 
-**Live:** https://now.harssha.design/upi-small-payments/
+**Live:** https://now.harssha.design/upi-study/
 
-UPI does 25 billion payments a month and the average one is ₹1,238, smaller every year. The report shows where the growth came from: groceries, cigarettes, a few cities and two apps. Seven charts, one claim each.
+A UPI study from NPCI's public statistics. 712 million payments in one month from one district. UPI is 25 billion payments a month and it is lopsided: a few cities, two apps and a flood of tiny payments. Seven charts, one claim each.
 
-1. UPI adds the same four billion payments every year.
-2. Only one month in ten years went backwards: April 2020.
-3. The average payment is shrinking. Shop payments are the reason.
-4. Shops get many tiny payments. Finance gets a few big ones.
-5. Every app, bank and state, ranked by the size of one payment.
-6. PhonePe and Google Pay own 79%. The rest is growing anyway.
-7. In most states, one city does most of the paying.
+1. In most states, one city does most of the paying.
+2. UPI adds the same four billion payments every year.
+3. Only one month in ten years went backwards: April 2020.
+4. The average payment is shrinking. Shop payments are the reason.
+5. Shops get many tiny payments. Finance gets a few big ones.
+6. Every app, bank and state, ranked by the size of one payment.
+7. PhonePe and Google Pay own 79%. The rest is growing anyway.
 
 ## Layout
 
@@ -39,4 +39,4 @@ NPCI's site blocks plain HTTP clients, so the tables were fetched from inside a 
 
 ## Credits
 
-Photos by Rudra Gupta, Urip Dunker, rupixen and David De Gendt on Unsplash. Type is Fraunces and Inter. Charts are D3.
+Photos by Rudra Gupta, Urip Dunker and rupixen on Unsplash. Type is Fraunces and Inter. Charts are D3.
