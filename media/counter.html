@@ -81,7 +81,7 @@ function render() {
   const tt = Math.min(T, COUNT_UNTIL);
   ctx.font = '400 28px Inter'; ctx.fillStyle = MUTED;
   ctx.fillText(`Each dot is ${PER_DOT} payments. ₹${(CR_RATE * tt).toFixed(1)} crore moved so far.`, 80, 372);
-  ctx.font = '500 24px Inter'; ctx.fillStyle = INK; ctx.fillText('now.harssha.design/upi-six-charts', 80, 416);
+  ctx.font = '500 24px Inter'; ctx.fillStyle = INK; ctx.fillText('now.harssha.design/upi-small-payments', 80, 416);
   const mm = Math.floor(tt / 60), ss = Math.floor(tt % 60), ds = Math.floor((tt * 10) % 10);
   ctx.font = '500 30px Inter'; ctx.fillStyle = T >= COUNT_UNTIL ? ACCENT : INK; ctx.textAlign = 'right'; ctx.fontVariantNumeric = 'tabular-nums';
   ctx.fillText(`${mm}:${String(ss).padStart(2, '0')}.${ds}`, W - 80, 154); ctx.textAlign = 'left';

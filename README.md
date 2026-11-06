@@ -2,7 +2,7 @@
 
 A live, interactive report built from NPCI's public UPI statistics, April 2016 to October 2026.
 
-**Live:** https://now.harssha.design/upi-six-charts/
+**Live:** https://now.harssha.design/upi-small-payments/
 
 UPI does 25 billion payments a month and the average one is ₹1,238, smaller every year. The report shows where the growth came from: groceries, cigarettes, a few cities and two apps. Seven charts, one claim each.
 
